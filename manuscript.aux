@@ -1,0 +1,76 @@
+\relax 
+\citation{chipatlas}
+\citation{encode}
+\citation{roadmap}
+\citation{pubmedbert}
+\citation{sapbert}
+\citation{medcpt}
+\citation{atacformer}
+\citation{lisa2}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}{}\protected@file@percent }
+\citation{biorender}
+\citation{biorender}
+\citation{chipatlas}
+\citation{atacformer}
+\citation{lisa2}
+\citation{pubmedbert}
+\citation{sapbert}
+\citation{medcpt}
+\citation{mpnet}
+\@writefile{toc}{\contentsline {section}{\numberline {II}Methods}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-A}}Dataset}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-B}}Atacformer Embeddings}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-C}}Regulatory Potential Embeddings}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-D}}Text Embeddings}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-E}}Similarity Matrices and Comparison Metrics}{2}{}\protected@file@percent }
+\newlabel{sec:metrics}{{\mbox  {II-E}}{2}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-F}}Decomposing LLM Signal from TF-IDF}{2}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Study design. ATAC-seq experiments are embedded using chromatin-based models (Atacformer, RP), text encoders (biomedical and general language models, TF-IDF), and a random baseline. Pairwise cosine similarity matrices are computed at cell-type-aggregated and full-dataset levels and compared using three complementary metrics. Created with BioRender.com~\cite  {biorender}.}}{3}{}\protected@file@percent }
+\newlabel{fig:schematic}{{1}{3}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {III}Results}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Text Embeddings Show Weak but Significant Alignment with Atacformer}{3}{}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Spearman rank correlation ($r$) between each embedding type and Atacformer similarity, at the cell-type-aggregated level ($N = 1{,}108$ cell types) and the full-dataset scale ($N = 32{,}245$ experiments, $\sim $520M pairs), with 95\% bootstrap confidence intervals (1,000 resamples; see Methods). Significance markers (Mantel permutation test) are reported at the cell-type level only; at full scale, $p$-values are uninformative and omitted.}}{3}{}\protected@file@percent }
+\newlabel{tab:spearman}{{I}{3}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Sanity check Uniform Manifold Approximation and Projection (UMAP) projections (top) and cosine similarity heatmaps (bottom) for all 12 embedding conditions over 34 representative cell types. Atacformer and RP show biologically coherent lineage clustering; text-based models show coarser, cell-type-level organization.}}{4}{}\protected@file@percent }
+\newlabel{fig:s1}{{2}{4}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Biomedical Language Models Encode Modest Signal Beyond Vocabulary Overlap}{5}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}Text Embeddings Share Local Structure with RP but Not Atacformer}{5}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Spearman $r$ vs.\ Atacformer (solid bars) and partial Spearman $r$ after controlling for TF-IDF (hatched bars), full 32,245-experiment level. PubMedBERT and SapBERT retain positive partial correlations; MedCPT and General do not.}}{5}{}\protected@file@percent }
+\newlabel{fig:decomp}{{3}{5}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Fraction of top-$k$ LLM nearest neighbors shared with TF-IDF. Roughly $\sim $33\% of nearest neighbors are shared at $k=5$ across all four models, indicating two-thirds of each LLM's local structure is distinct from TF-IDF.}}{5}{}\protected@file@percent }
+\newlabel{fig:decomp_b}{{4}{5}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces TF-IDF ($x$-axis) vs.\ LLM ($y$-axis) pairwise similarity for 25,000 randomly sampled experiment pairs, colored by Atacformer similarity (RdYlBu; warmer = higher). Points above the diagonal indicate pairs the LLM scores higher than TF-IDF.}}{6}{}\protected@file@percent }
+\newlabel{fig:s3a}{{5}{6}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Atacformer similarity for below- vs.\ above-diagonal pairs (Welch's $t$-test). For all four models, above-diagonal pairs have significantly higher mean Atacformer similarity (PubMedBERT: 0.070 vs.\ 0.013; SapBERT: 0.059 vs.\ 0.027; MedCPT: 0.060 vs.\ 0.028; General: 0.051 vs.\ 0.037); $d$ denotes Cohen's $d$ effect size (PubMedBERT: $d=0.38$; SapBERT: $d=0.22$; MedCPT: $d=0.21$; General: $d=0.09$).}}{6}{}\protected@file@percent }
+\newlabel{fig:s3b}{{6}{6}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Top-$k$ neighborhood overlap vs.\ Atacformer at the full 32,245-experiment scale. Full-text models share only $\sim $2 to 3\% of nearest neighbors with Atacformer at $k=5$.}}{6}{}\protected@file@percent }
+\newlabel{fig:topk}{{7}{6}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Top-$k$ neighborhood overlap vs.\ regulatory potential (RP) at the full 32,245-experiment scale. Full-text models share $\sim $20 to 23\% of nearest neighbors with RP at $k=5$, a seven-fold increase relative to Atacformer.}}{6}{}\protected@file@percent }
+\newlabel{fig:topk_rp}{{8}{6}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Spearman rank correlation between each embedding type and regulatory potential (RP). Analogous to Table~\ref {tab:spearman} with RP as reference (name-only variants omitted for clarity). Error bars show 95\% bootstrap confidence intervals; significance markers (Mantel permutation test) are shown for the cell-type-aggregated bars only.}}{7}{}\protected@file@percent }
+\newlabel{fig:s2}{{9}{7}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Per-cell-type within-cell-type similarity for Atacformer vs.\ regulatory potential (RP), computed as mean pairwise cosine similarity among experiments sharing a cell-type label (947 cell types with $\geq 2$ experiments). Points below the diagonal indicate higher within-cell-type variation for Atacformer than RP.}}{7}{}\protected@file@percent }
+\newlabel{fig:s4}{{10}{7}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Distribution of within-cell-type similarity across cell types (Wilcoxon signed-rank test). RP experiments are highly self-similar within cell type (median 0.50); Atacformer experiments are markedly less so (median 0.16), reflecting substantial within-cell-type heterogeneity.}}{7}{}\protected@file@percent }
+\newlabel{fig:s4b}{{11}{7}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Discussion}{7}{}\protected@file@percent }
+\citation{claude}
+\bibstyle{IEEEtran}
+\bibdata{references}
+\bibcite{chipatlas}{1}
+\bibcite{encode}{2}
+\bibcite{roadmap}{3}
+\bibcite{pubmedbert}{4}
+\bibcite{sapbert}{5}
+\bibcite{medcpt}{6}
+\bibcite{atacformer}{7}
+\bibcite{lisa2}{8}
+\bibcite{biorender}{9}
+\bibcite{mpnet}{10}
+\bibcite{claude}{11}
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Experiment pairs: high Atacformer similarity, low TF-IDF similarity. Cell-type labels differ entirely, illustrating chromatin similarity unpredictable from metadata.}}{8}{}\protected@file@percent }
+\newlabel{tab:qual_atac}{{II}{8}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces Experiment pairs: high RP similarity, low TF-IDF similarity, selected analogously to Table~\ref {tab:qual_atac}.}}{8}{}\protected@file@percent }
+\newlabel{tab:qual_rp}{{III}{8}{}{}{}}
+\@writefile{toc}{\contentsline {section}{References}{8}{}\protected@file@percent }
+\gdef \@abspage@last{8}
