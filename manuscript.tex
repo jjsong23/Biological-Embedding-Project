@@ -34,8 +34,9 @@ Similarity: A Large-Scale Measurement Study}
 The extent to which biomedical text metadata can serve as a proxy for
 chromatin accessibility similarity remains unknown. We conducted a systematic
 measurement study comparing pairwise cosine similarity matrices across
-11 distinct embedding types (Atacformer,
-regulatory potential (RP), four biomedical language models, term
+12 distinct embedding types (Atacformer,
+regulatory potential (RP), four biomedical language models tested in
+full-metadata and cell-type-name-only configurations, term
 frequency-inverse document frequency (TF-IDF), and a
 random Gaussian baseline) across 32,245 human assay for transposase-accessible
 chromatin with sequencing (ATAC-seq) experiments from
@@ -43,7 +44,7 @@ ChIP-Atlas. Using Spearman rank
 correlation, Mantel permutation tests, and top-$k$ neighborhood overlap, we
 find that text embeddings of experimental metadata show weak but statistically
 significant correlation with Atacformer-derived chromatin similarity
-($r = 0.06$ at cell-type level; $r = 0.25$ to $0.28$ at full scale).
+($r = 0.032$ to $0.060$ at cell-type level; $r = 0.20$ to $0.28$ at full scale).
 TF-IDF matches or outperforms all large language models (LLMs),
 indicating that surface-level vocabulary rather than semantic understanding drives
 this correlation. Biomedical language models marginally outperform a
@@ -101,8 +102,8 @@ type and chromatin state. Regulatory potential (RP)~\cite{lisa2} provides a
 complementary, functional-genomics-derived signal: a gene-activation-weighted
 summary of chromatin accessibility indexed by gene transcription start sites (TSS).
 
-We compare pairwise cosine similarity matrices from 11 embedding types (chromatin
-models, biomedical LLMs, TF-IDF, and a random baseline) across 32,245 curated
+We compare pairwise cosine similarity matrices from 12 embedding types (chromatin
+models, biomedical LLMs in full-metadata and name-only configurations, TF-IDF, and a random baseline) across 32,245 curated
 human ATAC-seq experiments, treating both agreement and disagreement as
 informative findings.
 
@@ -127,7 +128,7 @@ Fig.~\ref{fig:schematic} summarizes the overall study design: chromatin-based
 embeddings (Atacformer, RP) and text-based embeddings (biomedical and general
 language models, TF-IDF, random) are computed for each experiment, converted
 into pairwise similarity matrices at two levels of aggregation, and compared
-using the three metrics described in Section~\ref{sec:metrics}.
+using the four metrics described in Section~\ref{sec:metrics}.
 
 \begin{figure*}[!t]
   \centering
@@ -136,7 +137,7 @@ using the three metrics described in Section~\ref{sec:metrics}.
   using chromatin-based models (Atacformer, RP), text encoders (biomedical and
   general language models, TF-IDF), and a random baseline. Pairwise cosine
   similarity matrices are computed at cell-type-aggregated and full-dataset
-  levels and compared using three complementary metrics.
+  levels and compared using four complementary metrics.
   Created with BioRender.com~\cite{biorender}.}
   \label{fig:schematic}
 \end{figure*}
@@ -162,11 +163,13 @@ tokens were mean-pooled to produce a 192-dimensional embedding per experiment.
 We computed RP for each experiment using a LISA2-style exponential decay
 model~\cite{lisa2}: each chromatin peak's contribution to a given gene is
 weighted by $w(d) = e^{-d/10\,\text{kb}}$, where $d$ is the distance to
-the gene's TSS, with exon-adjacent peaks receiving additional upweighting.
+the gene's TSS, with peaks overlapping annotated exons assigned a fixed weight
+of 1.0 (replacing the exponential decay for those peaks).
 Summing across all peaks yields a per-gene RP score; stacking over all hg38
 autosomal gene TSSs maps each experiment to a 40,772-dimensional vector.
 
 \subsection{Text Embeddings}
+\label{sec:text_emb}
 
 This section describes text- and metadata-based embedding methods only;
 chromatin-based embeddings (Atacformer and RP) are described in the two
@@ -187,7 +190,7 @@ the contribution of cell type identity, we also encoded each experiment using
 only the cell type name string with all four models (cell-type-name-only
 ablation). We additionally computed TF-IDF embeddings (top 2,048
 features, sublinear TF, 2,048-dimensional) and a random Gaussian
-baseline (192-d, fixed seed).
+baseline (192-dimensional, seed 42).
 
 \subsection{Similarity Matrices and Comparison Metrics}
 \label{sec:metrics}
@@ -264,9 +267,9 @@ edge weights of matrices $X$ and $Y$. At the full scale, correlations were
 estimated on a random subsample of $2 \times 10^6$ pairs from the
 ${\sim}520$M-element upper triangle. A positive partial correlation indicates
 that the LLM encodes biological structure beyond vocabulary overlap; a value
-near zero or negative indicates its Atacformer alignment is fully explained
-by TF-IDF (i.e., once TF-IDF's shared variance with Atacformer is removed,
-the LLM contributes no additional association with chromatin similarity).
+near zero or negative indicates its Atacformer alignment is statistically
+accounted for by TF-IDF (i.e., once TF-IDF's shared variance with Atacformer
+is removed, the LLM contributes no additional association with chromatin similarity).
 
 Cross top-$k$ neighborhood overlap. For each LLM and each
 $k \in \{5, 10, 20, 50\}$, we computed the mean fraction of top-$k$ LLM
@@ -292,9 +295,10 @@ distinct clusters, while text-based embeddings show coarser organization
   \includegraphics[width=\linewidth]{figS1b.png}
   \caption{Sanity check Uniform Manifold Approximation and Projection (UMAP) projections (top) and cosine
   similarity heatmaps (bottom) for all 12 embedding conditions over 34
-  representative cell types. Atacformer and RP show biologically coherent
-  lineage clustering; text-based models show coarser, cell-type-level
-  organization.}
+  representative cell types manually selected to span major lineages (immune,
+  neural, stem/progenitor, cancer, and stromal). Atacformer and RP show
+  biologically coherent lineage clustering; text-based models show coarser,
+  cell-type-level organization.}
   \label{fig:s1}
 \end{figure*}
 
@@ -304,7 +308,7 @@ correlation with Atacformer (PubMedBERT: $r = 0.060$; SapBERT: $r = 0.057$;
 MedCPT: $r = 0.035$; General: $r = 0.032$; all Mantel $p < 0.01$,
 $N = 1{,}000$ permutations; Table~\ref{tab:spearman}). TF-IDF showed
 comparable agreement ($r = 0.060$, $p < 0.001$). Cell-type-name-only variants of the same models showed no significant
-correlation with Atacformer ($r \approx 0$, $p > 0.20$ for all four
+correlation with Atacformer ($r \approx 0$; Mantel $p > 0.20$ for all four
 models), establishing that agreement in full-text models is driven by
 experimental description and title metadata, not cell type name alone.
 
@@ -349,6 +353,7 @@ encoder ($r = 0.196$; Table~\ref{tab:spearman}).
 
 \FloatBarrier
 \subsection{Biomedical Language Models Encode Modest Signal Beyond Vocabulary Overlap}
+\label{sec:partial_corr}
 
 To determine whether the observed text-Atacformer correlation reflects
 information beyond vocabulary overlap, we computed the partial Spearman
@@ -356,18 +361,18 @@ correlation (see Section~\ref{sec:metrics}) of each LLM with Atacformer
 after controlling for TF-IDF (i.e., removing variance in LLM-Atacformer
 similarity attributable to vocabulary overlap; Fig.~\ref{fig:decomp}).
 
-PubMedBERT ($\Delta r = +0.051$) and SapBERT ($\Delta r = +0.045$)
+PubMedBERT ($r_{\mathrm{partial}} = +0.051$) and SapBERT ($r_{\mathrm{partial}} = +0.045$)
 retained small but non-zero positive partial correlations after controlling
 for TF-IDF, indicating a residual association with Atacformer similarity that
-is not explained by vocabulary overlap alone. MedCPT ($\Delta r = -0.030$)
-and the general-purpose encoder ($\Delta r = -0.042$) showed negative
+is not explained by vocabulary overlap alone. MedCPT ($r_{\mathrm{partial}} = -0.030$)
+and the general-purpose encoder ($r_{\mathrm{partial}} = -0.042$) showed negative
 partial correlations, meaning their unadjusted Atacformer agreement is fully
 (and nominally more than) accounted for by shared vocabulary with TF-IDF. The high
 correlation between LLM and TF-IDF similarity structures ($r = 0.73$ to $0.82$)
 confirms that vocabulary overlap is the dominant driver across all models.
 
 PubMedBERT, SapBERT, and MedCPT are all derived from the same
-PubMedBERT-pretrained base (Section~2.4), so this divide cannot be attributed
+PubMedBERT-pretrained base (Section~\ref{sec:text_emb}), so this divide cannot be attributed
 to differences in base biomedical-literature pretraining alone. PubMedBERT
 (no further fine-tuning) and SapBERT (fine-tuned via UMLS synonym
 self-alignment, an objective that preserves general semantic-similarity
@@ -394,8 +399,8 @@ this unique structure aligns with Atacformer only for PubMedBERT and SapBERT.
 \begin{figure}[!t]
   \centering
   \includegraphics[width=\columnwidth]{fig4a.png}
-  \caption{Spearman $r$ vs.\ Atacformer (solid bars) and partial
-  Spearman $r$ after controlling for TF-IDF (hatched bars), full
+  \caption{Spearman $r$ vs.\ Atacformer (solid bars) and partial Spearman
+  $r_{\mathrm{partial}}$ after controlling for TF-IDF (hatched bars), full
   32,245-experiment level. PubMedBERT and SapBERT retain positive partial
   correlations; MedCPT and General do not.}
   \label{fig:decomp}
@@ -443,7 +448,7 @@ we repeated the analysis using RP as the reference
 (Fig.~\ref{fig:topk_rp}; see also Fig.~\ref{fig:s2}).
 
 The same full-text models shared 20 to 23\% of nearest neighbors with RP at
-$k = 5$, a seven-fold increase relative to Atacformer (PubMedBERT: 22.5\%;
+$k = 5$, approximately an eight-fold increase relative to Atacformer (PubMedBERT: 22.5\%;
 SapBERT: 22.1\%; General: 21.4\%; MedCPT: 19.8\%). This dissociation
 persisted across all values of $k$ tested. Cell-type-name-only models showed
 intermediate overlap with RP ($\sim$7\% at $k = 5$), substantially higher
@@ -476,7 +481,7 @@ Atacformer.
   \includegraphics[width=\columnwidth]{fig3b.png}
   \caption{Top-$k$ neighborhood overlap vs.\ regulatory potential (RP) at the
   full 32,245-experiment scale. Full-text models share $\sim$20 to 23\% of nearest
-  neighbors with RP at $k=5$, a seven-fold increase relative to Atacformer.}
+  neighbors with RP at $k=5$, approximately an eight-fold increase relative to Atacformer.}
   \label{fig:topk_rp}
 \end{figure}
 
@@ -543,7 +548,10 @@ from the dataset.
     \centering
     \caption{Experiment pairs: high Atacformer similarity, low TF-IDF
     similarity. Cell-type labels differ entirely, illustrating chromatin
-    similarity unpredictable from metadata.}
+    similarity unpredictable from metadata. These examples are illustrative;
+    technical confounders (e.g., sequencing depth, peak count) have not been
+    ruled out for individual pairs. ``(unlabeled)'' denotes experiments
+    lacking a cell-type annotation in ChIP-Atlas.}
     \label{tab:qual_atac}
     \begin{tabular}{llcc}
       \toprule
@@ -566,7 +574,9 @@ from the dataset.
   \begin{minipage}[t]{0.48\linewidth}
     \centering
     \caption{Experiment pairs: high RP similarity, low TF-IDF similarity,
-    selected analogously to Table~\ref{tab:qual_atac}.}
+    selected analogously to Table~\ref{tab:qual_atac}. Same caveats apply:
+    examples are illustrative; technical confounders have not been ruled out
+    for individual pairs; ``(unlabeled)'' denotes unannotated experiments.}
     \label{tab:qual_rp}
     \begin{tabular}{llcc}
       \toprule
@@ -598,16 +608,16 @@ statistics.
 The dominant finding is that vocabulary overlap (as measured by TF-IDF)
 accounts for the majority of the text-Atacformer correlation. TF-IDF achieves
 the highest unadjusted Spearman correlation at the full scale ($r = 0.300$) and
-fully explains the Atacformer alignment of both the general-purpose encoder and
-MedCPT. This suggests that experimental metadata primarily
+statistically accounts for the Atacformer alignment of both the general-purpose encoder and
+MedCPT in the partial correlation analysis. This suggests that experimental metadata primarily
 informs chromatin similarity through shared terminology, not semantic
 understanding.
 
-The partial correlation analysis (Section~3.2) complicates this picture.
-PubMedBERT ($\Delta r = +0.051$) and SapBERT ($\Delta r = +0.045$) retain
+The partial correlation analysis (Section~\ref{sec:partial_corr}) complicates this picture.
+PubMedBERT ($r_{\mathrm{partial}} = +0.051$) and SapBERT ($r_{\mathrm{partial}} = +0.045$) retain
 small but non-zero positive partial correlations with Atacformer after
-controlling for TF-IDF, whereas MedCPT ($\Delta r = -0.030$) and the
-general-purpose encoder ($\Delta r = -0.042$) do not. Since all three
+controlling for TF-IDF, whereas MedCPT ($r_{\mathrm{partial}} = -0.030$) and the
+general-purpose encoder ($r_{\mathrm{partial}} = -0.042$) do not. Since all three
 biomedical models share the same PubMedBERT-pretrained base, this divide is
 more plausibly attributable to fine-tuning objective than to pretraining.
 These partial correlations establish only that a non-zero residual exists,
