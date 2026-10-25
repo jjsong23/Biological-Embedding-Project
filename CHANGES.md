@@ -182,3 +182,73 @@ All new numbers come from those output files.
   validity).
 - **Not changed:** title (still accurate, but consider revising), figures 4–12 themselves (all-data
   versions).
+
+---
+
+# Publication-readiness audit (2026-10-25)
+
+No new analyses. Every number was rechecked against the result files, and Table I was regenerated from
+the CSVs in code.
+
+## Corrections
+- **Table I:** 7 values were mis-rounded. They had been typed from a 4-decimal printout, so they were
+  rounded twice. Fixed values:
+  - PubMedBERT CI vs Atacformer: upper bound 0.020.
+  - TF-IDF CI vs Atacformer: upper bound 0.025.
+  - SapBERT vs RP: cell-type 0.066, experiment 0.078.
+  - MedCPT CI vs RP: upper bound 0.106.
+  - PubMedBERT name-only CI vs RP: lower bound 0.026.
+  - SapBERT name-only vs RP: experiment 0.065.
+- **Text ranges:** "text embeddings" now consistently means the four LMs plus TF-IDF.
+  - Full dataset: 0.20 to 0.30.
+  - Abstract: "top-5 neighbors".
+  - TF-IDF "matched or exceeded" the LMs (on the full dataset it beats them vs Atacformer).
+- **Promoter claim:** limited to experiments with 100 to 10,000 peaks. The 1,689 experiments with fewer
+  than 100 peaks have a median promoter fraction of 42%.
+- **RP strata:** RP agreement is lowest in the two low-peak strata (0.04 to 0.10) and higher in the
+  two well-covered strata (0.08 to 0.17), not a steady rise.
+- **Model description:** "four biomedical language models" is now "three biomedical models and one
+  general-domain model".
+- **Intro:** "publication titles" is now "sample titles", and "experimental descriptions" is now
+  "cell-type descriptions".
+- **Corpus mean:** "randomly sampled" changed to "an arbitrary subset of 10,000". The code takes the
+  first 10,000 files in directory order.
+- **RP description:** now "peaks weighted by distance to each gene's TSS". It was
+  "gene-activation-weighted", which does not match the method.
+- **Overclaims softened:**
+  - "Not at all" is now "barely".
+  - "Strongest single determinant" is now "more strongly associated than any other variable we
+    examined".
+  - The random-baseline footnote now says "likely".
+  - The Table III caption states promoter fractions (median 72%, corpus median 57%) instead of
+    asserting the cause.
+- **Methods accuracy:**
+  - One-sided Mantel test stated.
+  - The scatter analysis is described as full-dataset only.
+  - Cross top-k k values given for each analysis set.
+  - Upper-triangle sizes given (148M and 520M pairs).
+  - The scope of the uncentered check is stated.
+  - The GPU timing sentence was removed (it did not apply to the primary analysis).
+
+## Notation and terminology
+- Spearman correlation is written ρ throughout, matching Figs. 4 and 10. The coverage figure axis was
+  relabeled.
+- "LLMs" is now "language models (LMs)". The models are BERT-base-sized encoders, and the equation
+  already used LM. The Fig. 6 caption notes that the panel axis says "LLM".
+- Terms used consistently: "cell-type level", "experiment level", "full dataset", "well-covered".
+
+## Structure and layout
+- Added author-block placeholders and a Data and Code Availability section (repository URL is a TODO).
+- Expanded the AI-use statement in the Acknowledgements.
+- Citation order:
+  - The Tables II/III paragraph moved to Section III-D, so Table I is cited first.
+  - The Methods no longer cite Fig. 6 ahead of Fig. 2.
+- Layout:
+  - Removed the forced page break before Methods.
+  - Shrank Fig. 3, which overflowed its page.
+  - Removed the float barriers around Tables II/III. This cut 1.5 near-empty pages, from 11 pages to 9.
+- Captions:
+  - Full-dataset figures are labeled as such.
+  - The Fig. 4 caption notes that its significance markers assume independent pairs.
+  - Abbreviations (iPSC, PBMC, ES, CI, SD) are defined.
+- Language pass: no em dashes or dash ranges in the text, and fewer formulaic constructions.

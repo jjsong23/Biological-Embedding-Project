@@ -52,7 +52,7 @@ for k, (ref, title) in enumerate((("atacformer", "(b) Text vs. Atacformer"), ("r
     a.set_xlabel("Peak-count stratum")
     a.set_title(title, loc="left")
     a.grid(axis="y", color="#e5e5e5", lw=0.6)
-ax[1].set_ylabel("Spearman $r$")
+ax[1].set_ylabel("Spearman ρ")
 ax[1].legend(frameon=False, fontsize=7, loc="upper right")
 fig.tight_layout()
 for ext in ("pdf", "png"):
