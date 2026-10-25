@@ -145,3 +145,40 @@
 - `Float too large for page by 38.7162pt` at line 303 (Tables II/III combined
   float) — pre-existing.
 - Underfull `\hbox` warnings for long URL strings — pre-existing.
+
+---
+
+# Option C reframe: well-covered primary analysis (2026-10-25)
+
+New analyses: `analysis/strengthen_analyses.py`, `analysis/primary_subset_analysis.py`,
+`analysis/make_coverage_figure.py`. Results: `/home/jsong205/atac_out/strengthen/` (see ROBUSTNESS.md).
+All new numbers come from those output files.
+
+- **Primary analysis set:** experiments with ≥5,000 peaks (17,232 experiments, 954 cell types).
+  All-data (32,245) results kept as a contrast.
+- **Abstract, key findings, intro:** rewritten around the peak-count finding. Primary numbers are
+  text–Atacformer r = 0.011–0.016 (all data: 0.20–0.28) and text–RP r = 0.06–0.10 with 31–35% of
+  top-5 neighbors shared. Promoter fraction is 69–75% below 10K peaks. Titles carry the signal.
+- **Methods:** Dataset now describes the peak-count distribution and the ≥5K filter. Added how the
+  primary analysis was run, and a new subsection, *Technical Covariates and Sensitivity Analyses*
+  (promoter fraction, depth covariates, strata, title-only TF-IDF, uncentered check, block bootstrap).
+- **Results:**
+  - New III-A, *Peak Count Inflates Apparent Text–Chromatin Agreement*, with a new figure
+    (`figures/fig_coverage.*`).
+  - III-B now reports well-covered results.
+  - Table I is now a two-column-wide table: vs Atacformer and vs RP; cell-type and experiment level
+    for ≥5K; all-data experiment level as a contrast.
+  - III-C: TF-IDF matches LLMs, and the residual beyond TF-IDF is ≈0 vs Atacformer. The
+    full-data PubMedBERT/SapBERT residual is shown with bootstrap CIs and flagged as sensitive to
+    coverage and centering. The fine-tuning-objective argument is removed.
+  - III-D: top-k overlap and neighborhood purity for well-covered experiments. The interpretation
+    that Atacformer captures richer within-cell-type biology is removed. Notes that Atacformer
+    neighborhoods are near chance for cell type in well-covered experiments, and gives the untested
+    1,024-peak-sampling hypothesis.
+- **Figures 4–12 and Tables II/III:** captions now say "All 32,245 experiments (contrast analysis)".
+  Tables II/III are reframed as low-peak artifacts (all Table III experiments have ≤1,438 peaks).
+- **Discussion:** rewritten. Adds the methodological implication (control for peak count) and new
+  limitations (no FRiP/TSS-enrichment QC in ChIP-Atlas, pragmatic threshold, Atacformer
+  validity).
+- **Not changed:** title (still accurate, but consider revising), figures 4–12 themselves (all-data
+  versions).

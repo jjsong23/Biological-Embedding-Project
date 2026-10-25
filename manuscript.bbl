@@ -67,8 +67,9 @@ Q.~Qin, J.~Fan, R.~Zheng, C.~Wan, S.~Mei, Q.~Wu, H.~Sun, M.~Brown, J.~Zhang,
 {BioRender}, ``{BioRender},'' \url{https://biorender.com}, 2025.
 
 \bibitem{mpnet}
-N.~Reimers and I.~Gurevych, ``{Sentence-BERT: Sentence embeddings using Siamese
-  BERT-networks},'' in \emph{Proc. EMNLP-IJCNLP}, 2019, pp. 3982--3992.
+K.~Song, X.~Tan, T.~Qin, J.~Lu, and T.-Y. Liu, ``{MPNet: Masked and permuted
+  pre-training for language understanding},'' in \emph{Advances in Neural
+  Information Processing Systems}, vol.~33, 2020, pp. 16\,857--16\,867.
 
 \bibitem{claude}
 Anthropic, ``{Claude Sonnet 4.6 System Card},''
