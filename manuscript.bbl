@@ -1,4 +1,4 @@
-\begin{thebibliography}{11}
+\begin{thebibliography}{10}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -55,7 +55,8 @@ Nathan~J. LeRoy, Guangtao Zheng, Oleksandr Khoroshevskyi, Donald~R. Campbell,
   Aidong Zhang, and Nathan~C. Sheffield.
 \newblock {Atacformer: A transformer-based foundation model for analysis and
   interpretation of ATAC-seq data}.
-\newblock bioRxiv, 2025.
+\newblock \emph{bioRxiv}, 2025.
+\newblock \doi{10.1101/2025.11.03.685753}.
 
 \bibitem[Qin et~al.(2020)Qin, Fan, Zheng, Wan, Mei, Wu, Sun, Brown, Zhang,
   Meyer, and Liu]{lisa2}
@@ -66,11 +67,6 @@ Qian Qin, Jingyu Fan, Rongbin Zheng, Changxin Wan, Shenglin Mei, Qiu Wu, Hanfei
 \newblock \emph{Genome Biology}, 21:\penalty0 32, 2020.
 \newblock \doi{10.1186/s13059-020-1934-6}.
 
-\bibitem[{BioRender}(2025)]{biorender}
-{BioRender}.
-\newblock {BioRender}.
-\newblock \url{https://biorender.com}, 2025.
-
 \bibitem[Song et~al.(2020)Song, Tan, Qin, Lu, and Liu]{mpnet}
 Kaitao Song, Xu~Tan, Tao Qin, Jianfeng Lu, and Tie-Yan Liu.
 \newblock {MPNet: Masked and permuted pre-training for language understanding}.
@@ -79,7 +75,7 @@ Kaitao Song, Xu~Tan, Tao Qin, Jianfeng Lu, and Tie-Yan Liu.
 
 \bibitem[Anthropic(2026)]{claude}
 Anthropic.
-\newblock {Claude Sonnet 4.6 System Card}.
-\newblock \url{https://www.anthropic.com/claude-sonnet-4-6-system-card}, 2026.
+\newblock Claude.
+\newblock Large language model, 2026.
 
 \end{thebibliography}

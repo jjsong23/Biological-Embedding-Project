@@ -32,20 +32,18 @@
 
 \hypersetup{
   pdftitle={Biomedical Text Embeddings Weakly Capture Chromatin Accessibility Similarity: A Large-Scale Measurement Study},
-  pdfauthor={Joshua Song, Yang Dai, Brandon Lukas}
+  pdfauthor={Joshua Song, Brandon Lukas, Yang Dai}
 }
 
 \title{\textbf{Biomedical Text Embeddings Weakly Capture Chromatin Accessibility
 Similarity: A Large-Scale Measurement Study}}
 
 \author[1]{Joshua Song}
-\author[2]{Yang Dai}
-\author[3]{Brandon Lukas}
-\affil[1]{[TODO: affiliation]}
-\affil[2]{[TODO: affiliation]}
-\affil[3]{[TODO: affiliation]}
-\affil[ ]{Contact: Joshua Song (\href{mailto:joshua.song@nih.gov}{joshua.song@nih.gov}),
-Yang Dai (\href{mailto:yangdai@uic.edu}{yangdai@uic.edu}),
+\author[1]{Brandon Lukas}
+\author[1,*]{Yang Dai}
+\affil[1]{University of Illinois Chicago, Chicago, IL, USA}
+\affil[*]{Corresponding author: \href{mailto:yangdai@uic.edu}{yangdai@uic.edu}}
+\affil[ ]{Other authors: Joshua Song (\href{mailto:joshua.song@nih.gov}{joshua.song@nih.gov}),
 Brandon Lukas (\href{mailto:blukas4@uic.edu}{blukas4@uic.edu})}
 \renewcommand\Affilfont{\small}
 \date{}
@@ -167,8 +165,8 @@ compared using the metrics described in Section~\ref{sec:metrics}.
   general-domain language models, TF-IDF), and a random baseline. Pairwise
   cosine similarity matrices are computed at the cell-type and experiment
   levels and compared using Spearman rank correlation, Mantel permutation
-  tests, and top-$k$ neighborhood overlap. Created with
-  BioRender.com~\cite{biorender}.}
+  tests, and top-$k$ neighborhood overlap. Created in
+  \url{https://BioRender.com}.}
   \label{fig:schematic}
 \end{figure}
 
@@ -775,11 +773,11 @@ ATAC-seq peak calls and metadata are publicly available from
 ChIP-Atlas~\cite{chipatlas}. All models are public Hugging Face checkpoints,
 listed by identifier in Sections~\ref{sec:atacformer}
 and~\ref{sec:text_emb}. Analysis code and derived results are available at
-[TODO: repository URL].
+\url{https://github.com/jjsong23/Biological-Embedding-Project}.
 
 \section*{Competing interests}
 
-[TODO: competing interests statement]
+The authors declare no competing interests.
 
 \section*{Acknowledgements}
 
