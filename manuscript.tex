@@ -1,35 +1,56 @@
-\documentclass[conference]{IEEEtran}
+\documentclass[11pt]{article}
 
-\usepackage{cite}
-\usepackage{amsmath,amssymb,amsfonts}
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage{microtype}
+\usepackage{amsmath}
 \usepackage{graphicx}
-\usepackage{textcomp}
-\usepackage{xcolor}
 \usepackage{booktabs}
-\usepackage{url}
-\usepackage{float}
-\usepackage{placeins}
+\usepackage{xcolor}
+\usepackage{authblk}
+\usepackage{setspace}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[font=small,labelfont=bf,labelsep=period]{caption}
+\usepackage[section]{placeins}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\usepackage{xurl}
 
 \graphicspath{{figures/}}
+\setstretch{1.15}
+\captionsetup[table]{skip=4pt}
 
-% Allow more floats per page and reduce minimum text fraction
+% Allow more floats per page
 \renewcommand{\topfraction}{0.9}
 \renewcommand{\bottomfraction}{0.8}
 \renewcommand{\textfraction}{0.07}
-\renewcommand{\floatpagefraction}{0.85}
+\renewcommand{\floatpagefraction}{0.8}
 \setcounter{topnumber}{4}
 \setcounter{bottomnumber}{2}
 \setcounter{totalnumber}{6}
 
+\hypersetup{
+  pdftitle={Biomedical Text Embeddings Weakly Capture Chromatin Accessibility Similarity: A Large-Scale Measurement Study},
+  pdfauthor={Joshua Song, Yang Dai, Brandon Lukas}
+}
+
+\title{\textbf{Biomedical Text Embeddings Weakly Capture Chromatin Accessibility
+Similarity: A Large-Scale Measurement Study}}
+
+\author[1]{Joshua Song}
+\author[2]{Yang Dai}
+\author[3]{Brandon Lukas}
+\affil[1]{[TODO: affiliation]}
+\affil[2]{[TODO: affiliation]}
+\affil[3]{[TODO: affiliation]}
+\affil[ ]{Contact: Joshua Song (\href{mailto:joshua.song@nih.gov}{joshua.song@nih.gov}),
+Yang Dai (\href{mailto:yangdai@uic.edu}{yangdai@uic.edu}),
+Brandon Lukas (\href{mailto:blukas4@uic.edu}{blukas4@uic.edu})}
+\renewcommand\Affilfont{\small}
+\date{}
+
 \begin{document}
-
-\title{Biomedical Text Embeddings Weakly Capture Chromatin Accessibility
-Similarity: A Large-Scale Measurement Study}
-
-\author{\IEEEauthorblockN{[TODO: author names]}
-\IEEEauthorblockA{[TODO: department and institution]\\
-{[TODO: city, country]}\\
-{[TODO: corresponding author email]}}}
 
 \maketitle
 
@@ -62,11 +83,8 @@ similarity, and peak count should be controlled whenever chromatin
 representations are compared across public repositories.
 \end{abstract}
 
-\begin{IEEEkeywords}
-genomics, bioinformatics, chromatin, natural language processing,
-transformers, feature extraction, correlation, similarity measures
-\end{IEEEkeywords}
-
+\noindent\textbf{Keywords:} ATAC-seq; chromatin accessibility; text embeddings;
+biomedical language models; regulatory potential; ChIP-Atlas; data quality
 
 % ── Introduction ──────────────────────────────────────────────────────────────
 \section{Introduction}
@@ -141,7 +159,7 @@ TF-IDF, and a random baseline) are computed for each experiment, converted into
 pairwise similarity matrices at the cell-type and experiment levels, and
 compared using the metrics described in Section~\ref{sec:metrics}.
 
-\begin{figure*}[!t]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=\linewidth]{fig1.png}
   \caption{Study design. ATAC-seq experiments are embedded with
@@ -152,7 +170,7 @@ compared using the metrics described in Section~\ref{sec:metrics}.
   tests, and top-$k$ neighborhood overlap. Created with
   BioRender.com~\cite{biorender}.}
   \label{fig:schematic}
-\end{figure*}
+\end{figure}
 
 \subsection{Dataset}
 
@@ -175,7 +193,7 @@ not part of the metadata we used. Results on all 32,245 experiments (the
 \subsection{Atacformer Embeddings}
 \label{sec:atacformer}
 
-We encoded each experiment using \url{databio/atacformer-base-hg38}
+We encoded each experiment using \nolinkurl{databio/atacformer-base-hg38}
 (AtacformerForCellClustering)~\cite{atacformer}, a transformer trained with a
 triplet margin loss. Peak BED files were tokenized using the gtars Tokenizer
 with a vocabulary of 890K genomic regions. Up to 1,024 randomly sampled peak
@@ -195,18 +213,21 @@ over all hg38 autosomal gene TSSs maps each experiment to a
 \label{sec:text_emb}
 
 For each experiment we built a metadata string by concatenating the available
-fields: \{cell\_type\}. \{cell\_type\_class\}. \{cell\_type\_description\}.
-\{title\}. The description is the ChIP-Atlas cell-type description (for
+fields in the form
+\begin{center}
+\texttt{\{cell\_type\}. \{cell\_type\_class\}. \{cell\_type\_description\}. \{title\}.}
+\end{center}
+The description is the ChIP-Atlas cell-type description (for
 example, primary tissue and diagnosis), and the title is the experiment title
 from the sequencing archive record. We embedded this string with four
 encoders, each producing 768-dimensional embeddings. Three are biomedical
 models: PubMedBERT~\cite{pubmedbert}
-(\url{microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext}, mean
+(\nolinkurl{microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext}, mean
 pooling), SapBERT~\cite{sapbert}
-(\url{cambridgeltl/SapBERT-from-PubMedBERT-fulltext}, classification token
-(CLS) pooling), and MedCPT~\cite{medcpt} (\url{ncbi/MedCPT-Query-Encoder},
+(\nolinkurl{cambridgeltl/SapBERT-from-PubMedBERT-fulltext}, classification token
+(CLS) pooling), and MedCPT~\cite{medcpt} (\nolinkurl{ncbi/MedCPT-Query-Encoder},
 mean pooling). The fourth is a general-domain sentence
-encoder~\cite{mpnet} (\url{sentence-transformers/all-mpnet-base-v2}, mean
+encoder~\cite{mpnet} (\nolinkurl{sentence-transformers/all-mpnet-base-v2}, mean
 pooling), which we call General. We refer to the four encoders as language
 models (LMs). To isolate the contribution of cell-type identity, we also
 encoded the cell-type name alone with all four models (name-only variants). We
@@ -372,7 +393,7 @@ We therefore base our primary analysis on well-covered experiments
 experiment-level correlations computed with a 10,000-peak threshold lead to
 the same conclusions.
 
-\begin{figure*}[!t]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=\linewidth]{fig_coverage.png}
   \caption{Peak count and text-chromatin agreement on the full dataset.
@@ -384,7 +405,7 @@ the same conclusions.
   similarity, computed separately for pairs in which both experiments fall in
   the same peak-count stratum ($2 \times 10^6$ random pairs in total).}
   \label{fig:coverage}
-\end{figure*}
+\end{figure}
 
 \subsection{Text Weakly Tracks RP but Not Atacformer in Well-Covered Experiments}
 
@@ -393,18 +414,18 @@ all of their experiments (Fig.~\ref{fig:s1}). Atacformer and RP showed
 coherent lineage structure, with immune, neural, and cancer cell types forming
 distinct groups, while the text embeddings showed coarser organization.
 
-\begin{figure*}[!t]
+\begin{figure}[!htbp]
   \centering
-  \includegraphics[width=0.86\linewidth]{figS1a.png}
+  \includegraphics[width=0.9\textwidth]{figS1a.png}
   \vspace{4pt}
-  \includegraphics[width=0.86\linewidth]{figS1b.png}
+  \includegraphics[width=0.9\textwidth]{figS1b.png}
   \caption{Sanity check on 34 representative cell types chosen by hand to span
   major lineages (immune, neural, stem and progenitor, cancer, and stromal),
   using cell-type mean embeddings over all experiments. Top: Uniform Manifold
   Approximation and Projection (UMAP) projections. Bottom: cosine similarity
   heatmaps. All 12 embedding conditions are shown.}
   \label{fig:s1}
-\end{figure*}
+\end{figure}
 
 Table~\ref{tab:spearman} summarizes agreement in the 17,232 well-covered
 experiments (954 cell types). Text embeddings showed no positive agreement
@@ -425,7 +446,7 @@ description and title fields add information beyond the cell-type name. At
 the experiment level the gap was smaller ($\rho = 0.035$ to $0.080$ for the
 name-only variants).
 
-\begin{table*}[!t]
+\begin{table}[!htbp]
   \centering\footnotesize
   \caption{Spearman correlation ($\rho$) between each embedding's similarity
   matrix and the Atacformer and RP similarity matrices. Primary analysis:
@@ -462,7 +483,7 @@ name-only variants).
   The small random-baseline correlation at the cell-type level likely reflects
   centering, because subtracting the corpus mean gives the near-zero means of
   large cell types a common direction.}
-\end{table*}
+\end{table}
 
 \subsection{Language Models Add Little Beyond Vocabulary Overlap}
 \label{sec:partial_corr}
@@ -489,50 +510,56 @@ with Atacformer than TF-IDF does ($\rho = 0.153$). We therefore do not read
 the full-dataset differences among LMs as evidence about their pretraining or
 fine-tuning objectives.
 
-\begin{figure}[!t]
+\begin{figure}[!htbp]
   \centering
-  \includegraphics[width=\columnwidth]{fig4a.png}
-  \caption{Spearman correlation with Atacformer (solid bars) and partial
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{fig4a.png}
+    \caption{Spearman correlation with Atacformer (solid bars) and partial
   correlation after controlling for TF-IDF (hatched bars) for each LM on the
   full dataset. The significance markers in the panel come from tests that
   treat the sampled pairs as independent; experiment-level bootstrap CIs are
   given in Section~\ref{sec:partial_corr}. In well-covered experiments, all
   four partial correlations are at most 0.006.}
-  \label{fig:decomp}
-\end{figure}
-
-\begin{figure}[!t]
-  \centering
-  \includegraphics[width=\columnwidth]{fig4b.png}
-  \caption{Fraction of each LM's top-$k$ nearest neighbors that are also
+    \label{fig:decomp}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{fig4b.png}
+    \caption{Fraction of each LM's top-$k$ nearest neighbors that are also
   TF-IDF neighbors on the full dataset (about 33\% at $k=5$; 44 to 45\% in
   well-covered experiments).}
-  \label{fig:decomp_b}
+    \label{fig:decomp_b}
+  \end{minipage}
 \end{figure}
 
-\begin{figure}[!t]
+
+\begin{figure}[!htbp]
   \centering
-  \includegraphics[width=\columnwidth]{figS3a.png}
-  \caption{TF-IDF similarity ($x$-axis) against LM similarity ($y$-axis,
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figS3a.png}
+    \caption{TF-IDF similarity ($x$-axis) against LM similarity ($y$-axis,
   labeled LLM) for 25,000 random experiment pairs from the full dataset,
   colored by Atacformer similarity (warmer colors indicate higher
   similarity). Points above the diagonal are pairs that the LM scores higher
   than TF-IDF. Panel titles give the Spearman correlation between the two
   similarities.}
-  \label{fig:s3a}
-\end{figure}
-
-\begin{figure}[!t]
-  \centering
-  \includegraphics[width=\columnwidth]{figS3b.png}
-  \caption{Atacformer similarity for pairs below and above the diagonal in
+    \label{fig:s3a}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figS3b.png}
+    \caption{Atacformer similarity for pairs below and above the diagonal in
   Fig.~\ref{fig:s3a} (full dataset; Welch's $t$-test). For all four LMs,
   pairs above the diagonal have higher mean Atacformer similarity (PubMedBERT:
   0.070 vs.\ 0.013; SapBERT: 0.059 vs.\ 0.027; MedCPT: 0.060 vs.\ 0.028;
   General: 0.051 vs.\ 0.037). The corresponding effect sizes (Cohen's $d$) are
   0.38, 0.22, 0.21, and 0.09.}
-  \label{fig:s3b}
+    \label{fig:s3b}
+  \end{minipage}
 \end{figure}
+
 
 \subsection{Text Shares Local Structure with RP but Not Atacformer}
 
@@ -578,27 +605,30 @@ at most 1,438 peaks (the corpus median is 6,287), and the first pair in
 Table~\ref{tab:qual_atac} (NCI-H1299 and CD4+ T cells) has 1,181 and 1,272
 peaks. The remaining Atacformer pairs vary more in peak count.
 
-\begin{figure}[!t]
+\begin{figure}[!htbp]
   \centering
-  \includegraphics[width=\columnwidth]{fig3a.png}
-  \caption{Top-$k$ neighborhood overlap with Atacformer on the full dataset.
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{fig3a.png}
+    \caption{Top-$k$ neighborhood overlap with Atacformer on the full dataset.
   Full-text models share about 2 to 3\% of nearest neighbors with Atacformer
   at $k=5$ (less than 0.1\% in well-covered experiments).}
-  \label{fig:topk}
-\end{figure}
-
-\begin{figure}[!t]
-  \centering
-  \includegraphics[width=\columnwidth]{fig3b.png}
-  \caption{Top-$k$ neighborhood overlap with RP on the full dataset.
+    \label{fig:topk}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{fig3b.png}
+    \caption{Top-$k$ neighborhood overlap with RP on the full dataset.
   Full-text LMs share about 20 to 23\% of nearest neighbors with RP at $k=5$
   (31 to 35\% in well-covered experiments).}
-  \label{fig:topk_rp}
+    \label{fig:topk_rp}
+  \end{minipage}
 \end{figure}
 
-\begin{figure}[!t]
+
+\begin{figure}[!htbp]
   \centering
-  \includegraphics[width=\columnwidth]{figS2n.png}
+  \includegraphics[width=0.62\textwidth]{figS2n.png}
   \caption{Spearman correlation between each embedding and RP on the full
   dataset, at the cell-type level (solid bars) and the experiment level
   (hatched bars); name-only variants are omitted. Error bars show 95\%
@@ -608,31 +638,34 @@ peaks. The remaining Atacformer pairs vary more in peak count.
   \label{fig:s2}
 \end{figure}
 
-\begin{figure}[!t]
+\begin{figure}[!htbp]
   \centering
-  \includegraphics[width=\columnwidth]{figS4a.png}
-  \caption{Within-cell-type similarity (mean pairwise cosine similarity among
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figS4a.png}
+    \caption{Within-cell-type similarity (mean pairwise cosine similarity among
   experiments with the same cell-type label) for Atacformer against RP on the
   full dataset (947 cell types with at least two experiments). Points below
   the diagonal are cell types with lower within-cell-type similarity under
   Atacformer than under RP.}
-  \label{fig:s4}
-\end{figure}
-
-\begin{figure}[!t]
-  \centering
-  \includegraphics[width=\columnwidth]{figS4b.png}
-  \caption{Distribution of within-cell-type similarity across cell types on
+    \label{fig:s4}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figS4b.png}
+    \caption{Distribution of within-cell-type similarity across cell types on
   the full dataset (RP median 0.50, Atacformer median 0.16; Wilcoxon
   signed-rank test). Within-cell-type similarity tracks the spread of peak
   counts within each cell type (Section~\ref{sec:coverage}).}
-  \label{fig:s4b}
+    \label{fig:s4b}
+  \end{minipage}
 \end{figure}
 
-\begin{table*}[!t]
+
+\begin{table}[!htbp]
   \centering\footnotesize
   \setlength{\tabcolsep}{4pt}
-  \begin{minipage}[t]{0.48\linewidth}
+  \begin{minipage}[t]{0.485\textwidth}
     \centering
     \caption{Full-dataset experiment pairs with high Atacformer similarity (top
     5\%) and low TF-IDF similarity (below the median). The first pair
@@ -642,24 +675,23 @@ peaks. The remaining Atacformer pairs vary more in peak count.
     cell.}
     \label{tab:qual_atac}
     \begin{tabular}{llcc}
-      \toprule
-      Cell type A & Cell type B & Atac. & TF-IDF \\
-      \midrule
-      NCI-H1299            & CD4+ T cells              & $0.374$ & $-0.196$ \\
-      iPSC derived cells   & PC-9                      & $0.361$ & $-0.176$ \\
-      NCI-H1648            & iMeLCs                    & $0.312$ & $-0.214$ \\
-      (unlabeled)          & CD4+ T cells              & $0.398$ & $-0.147$ \\
-      NCI-H1648            & iPSC neural cells         & $0.307$ & $-0.204$ \\
-      (unlabeled)          & IMR-90                    & $0.309$ & $-0.188$ \\
-      (unlabeled)          & MV-4-11                   & $0.331$ & $-0.156$ \\
-      (unlabeled)          & Neural crest cells        & $0.310$ & $-0.179$ \\
-      iPSC derived cells   & Jurkat                    & $0.318$ & $-0.164$ \\
-      (unlabeled)          & DND-41                    & $0.316$ & $-0.161$ \\
-      \bottomrule
+    \toprule
+    Cell type A & Cell type B & Atac. & TF-IDF \\
+    \midrule
+    NCI-H1299            & CD4+ T cells              & $0.374$ & $-0.196$ \\
+    iPSC derived cells   & PC-9                      & $0.361$ & $-0.176$ \\
+    NCI-H1648            & iMeLCs                    & $0.312$ & $-0.214$ \\
+    (unlabeled)          & CD4+ T cells              & $0.398$ & $-0.147$ \\
+    NCI-H1648            & iPSC neural cells         & $0.307$ & $-0.204$ \\
+    (unlabeled)          & IMR-90                    & $0.309$ & $-0.188$ \\
+    (unlabeled)          & MV-4-11                   & $0.331$ & $-0.156$ \\
+    (unlabeled)          & Neural crest cells        & $0.310$ & $-0.179$ \\
+    iPSC derived cells   & Jurkat                    & $0.318$ & $-0.164$ \\
+    (unlabeled)          & DND-41                    & $0.316$ & $-0.161$ \\
+    \bottomrule
     \end{tabular}
-  \end{minipage}
-  \hfill
-  \begin{minipage}[t]{0.48\linewidth}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.485\textwidth}
     \centering
     \caption{Full-dataset experiment pairs with high RP similarity and low
     TF-IDF similarity, selected as in Table~\ref{tab:qual_atac}. Every
@@ -668,23 +700,24 @@ peaks. The remaining Atacformer pairs vary more in peak count.
     mononuclear cells; ES, embryonic stem.}
     \label{tab:qual_rp}
     \begin{tabular}{llcc}
-      \toprule
-      Cell type A & Cell type B & RP & TF-IDF \\
-      \midrule
-      iPSC derived cells & K-562           & $0.885$ & $-0.221$ \\
-      NCI-H2347          & PBMC            & $0.884$ & $-0.181$ \\
-      RERF-LC-Ad1        & XG-6            & $0.851$ & $-0.224$ \\
-      (unlabeled)        & PKC19           & $0.901$ & $-0.171$ \\
-      iPSC derived cells & T-47D           & $0.874$ & $-0.185$ \\
-      (unlabeled)        & B-cell leukemia & $0.891$ & $-0.170$ \\
-      NCI-H1648          & B cells         & $0.859$ & $-0.181$ \\
-      NCI-H1703          & CD4+ T cells    & $0.851$ & $-0.186$ \\
-      NCI-H1299          & CD4+ T cells    & $0.833$ & $-0.196$ \\
-      (unlabeled)        & ES cells        & $0.916$ & $-0.154$ \\
-      \bottomrule
+    \toprule
+    Cell type A & Cell type B & RP & TF-IDF \\
+    \midrule
+    iPSC derived cells & K-562           & $0.885$ & $-0.221$ \\
+    NCI-H2347          & PBMC            & $0.884$ & $-0.181$ \\
+    RERF-LC-Ad1        & XG-6            & $0.851$ & $-0.224$ \\
+    (unlabeled)        & PKC19           & $0.901$ & $-0.171$ \\
+    iPSC derived cells & T-47D           & $0.874$ & $-0.185$ \\
+    (unlabeled)        & B-cell leukemia & $0.891$ & $-0.170$ \\
+    NCI-H1648          & B cells         & $0.859$ & $-0.181$ \\
+    NCI-H1703          & CD4+ T cells    & $0.851$ & $-0.186$ \\
+    NCI-H1299          & CD4+ T cells    & $0.833$ & $-0.196$ \\
+    (unlabeled)        & ES cells        & $0.916$ & $-0.154$ \\
+    \bottomrule
     \end{tabular}
   \end{minipage}
-\end{table*}
+\end{table}
+
 
 % ── Discussion ────────────────────────────────────────────────────────────────
 \section{Discussion}
@@ -735,8 +768,8 @@ of their peaks, use uniformly reprocessed and quality-controlled data, and
 test whether text encoders trained to predict chromatin similarity can narrow
 the gap.
 
-% ── Data and code availability ────────────────────────────────────────────────
-\section*{Data and Code Availability}
+% ── Back matter ───────────────────────────────────────────────────────────────
+\section*{Data and code availability}
 
 ATAC-seq peak calls and metadata are publicly available from
 ChIP-Atlas~\cite{chipatlas}. All models are public Hugging Face checkpoints,
@@ -744,7 +777,10 @@ listed by identifier in Sections~\ref{sec:atacformer}
 and~\ref{sec:text_emb}. Analysis code and derived results are available at
 [TODO: repository URL].
 
-% ── Acknowledgements ──────────────────────────────────────────────────────────
+\section*{Competing interests}
+
+[TODO: competing interests statement]
+
 \section*{Acknowledgements}
 
 This work was supported by NVIDIA Corporation through its academic grant
@@ -753,8 +789,7 @@ program via the provision of an NVIDIA DGX Spark system. Claude
 manuscript. The authors reviewed all code, results, and text and take full
 responsibility for the content.
 
-% ── References ────────────────────────────────────────────────────────────────
-\bibliographystyle{IEEEtran}
+\bibliographystyle{unsrtnat}
 \bibliography{references}
 
 \end{document}

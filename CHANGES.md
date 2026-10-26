@@ -252,3 +252,32 @@ the CSVs in code.
   - The Fig. 4 caption notes that its significance markers assume independent pairs.
   - Abbreviations (iPSC, PBMC, ES, CI, SD) are defined.
 - Language pass: no em dashes or dash ranges in the text, and fewer formulaic constructions.
+
+---
+
+# bioRxiv format conversion (2026-10-25)
+
+- **Layout:** IEEEtran two-column conference layout replaced with a single-column article: 11 pt
+  Times, 1-inch margins, 1.15 line spacing, letter paper. Sections are numbered, so in-text
+  section references now read "Section 3.1" and so on.
+- **Front matter:**
+  - Authors: Joshua Song, Yang Dai, Brandon Lukas, in the order given.
+  - Contact emails for all three.
+  - Affiliations are TODO placeholders (not provided).
+  - The abstract is unchanged.
+  - IEEE index terms replaced with bioRxiv-style keywords.
+  - PDF title and author metadata set.
+- **Back matter:**
+  - Data and code availability (repository URL is still a TODO).
+  - Competing interests (TODO placeholder).
+  - Acknowledgements, unchanged.
+- **Figures:**
+  - Full-width figures use the text width.
+  - Figures 4/5, 6/7, 8/9, and 11/12 share a row. Numbering and order are unchanged.
+- **Tables:** Table 1 fits the single-column width. Tables 2 and 3 sit side by side in one float.
+- **Typography:**
+  - Model identifiers are set as non-clickable text, with line breaks allowed.
+  - The metadata template is shown on its own line.
+  - Typewriter text uses Latin Modern, so the PDF contains no bitmap fonts.
+- **References:** numbered, in citation order (natbib `unsrtnat`), with full author names.
+- **Prior layout:** the IEEE version is preserved in git at commit b20a067.
