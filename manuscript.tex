@@ -1,4 +1,4 @@
-\documentclass[11pt]{article}
+\documentclass[12pt]{article}
 
 \usepackage[letterpaper,margin=1in]{geometry}
 \usepackage[T1]{fontenc}
@@ -39,9 +39,10 @@
 Similarity: A Large-Scale Measurement Study}}
 
 \author[1]{Joshua Song}
-\author[1]{Brandon Lukas}
-\author[1,*]{Yang Dai}
-\affil[1]{University of Illinois Chicago, Chicago, IL, USA}
+\author[2]{Brandon Lukas}
+\author[2,*]{Yang Dai}
+\affil[1]{[TODO: department], University of Illinois Chicago, Chicago, IL, USA}
+\affil[2]{Department of Biomedical Engineering, University of Illinois Chicago, Chicago, IL, USA}
 \affil[*]{Corresponding author: \href{mailto:yangdai@uic.edu}{yangdai@uic.edu}}
 \affil[ ]{Other authors: Joshua Song (\href{mailto:joshua.song@nih.gov}{joshua.song@nih.gov}),
 Brandon Lukas (\href{mailto:blukas4@uic.edu}{blukas4@uic.edu})}
@@ -53,32 +54,36 @@ Brandon Lukas (\href{mailto:blukas4@uic.edu}{blukas4@uic.edu})}
 \maketitle
 
 \begin{abstract}
-Text metadata is the most readily available description of public chromatin
-accessibility data, but it is not known how well it reflects similarity
-between the underlying chromatin profiles. We compared pairwise cosine
-similarity matrices from 12 embedding types across 32,245 human assay for
-transposase-accessible chromatin with sequencing (ATAC-seq) experiments from
-ChIP-Atlas. The embeddings were two chromatin representations (Atacformer and
-regulatory potential, RP), three biomedical language models and one
-general-domain model applied to full metadata and to cell-type names alone,
-term frequency-inverse document frequency (TF-IDF), and a random baseline. We
-measured agreement with Spearman rank correlation, Mantel permutation tests,
-and top-$k$ neighborhood overlap. On the full dataset, text embeddings
-correlated with Atacformer similarity at $\rho = 0.20$ to $0.30$. This
-agreement was driven mostly by experiments with few called peaks, which
-consist largely of promoter peaks (median 69 to 75\% within 1~kb of a
-transcription start site for experiments with 100 to 10,000 peaks) and
-therefore look alike in both chromatin representations regardless of cell
-type. Among the 17,232 experiments with at least 5,000 peaks, the correlation
-with Atacformer fell to $\rho = 0.011$ to $0.016$, with less than 0.1\% of
-top-5 neighbors shared. Agreement with RP was weak but persisted
-($\rho = 0.06$ to $0.10$; 28 to 35\% of top-5 neighbors shared), consistent
-with both capturing coarse cell-type identity. Most of the full-dataset text
-signal came from sample titles, which mainly identify the submission and
-sequencing platform. TF-IDF matched or exceeded the language models in every
-correlation comparison. Text metadata is at best a coarse proxy for chromatin
-similarity, and peak count should be controlled whenever chromatin
-representations are compared across public repositories.
+Text metadata provides the most readily available description of public
+chromatin accessibility data, but it remains unclear how well it reflects
+similarity between the underlying chromatin profiles. We systematically
+compared pairwise cosine similarity matrices derived from 12 embedding types
+across 32,245 human assay for transposase-accessible chromatin with sequencing
+(ATAC-seq) experiments obtained from ChIP-Atlas. The embeddings were two
+chromatin representations (Atacformer and regulatory potential, RP), three
+biomedical language models and one general-domain model applied to full
+metadata and to cell-type names alone, term frequency-inverse document
+frequency (TF-IDF), and a random baseline. We measured agreement using
+Spearman rank correlation, Mantel permutation tests, and top-$k$ neighborhood
+overlap in the similarity matrices. Across the full dataset, text embedding
+similarities correlated with Atacformer-derived similarities at
+$\rho = 0.20$ to $0.30$. This text-Atacformer agreement was largely driven by
+experiments with relatively few called peaks, which were enriched for promoter
+regions (median 69 to 75\% within 1~kb of a transcription start site for
+experiments with 100 to 10,000 peaks), resulting in similar chromatin
+representations regardless of cell type. Among the 17,232 experiments with at
+least 5,000 peaks, the text-Atacformer correlations dropped substantially
+($\rho = 0.011$ to $0.016$), with less than 0.1\% of top-5 neighbors shared.
+In contrast, the agreement between text-derived and RP-derived similarities
+was weak but persisted ($\rho = 0.06$ to $0.10$; 28 to 35\% of top-5
+neighbors shared), suggesting that both capture coarse cell-type identity.
+Most of the text-derived similarity signal in the full dataset came from
+sample titles, which mainly identify the submission and sequencing platform.
+Notably, TF-IDF matched or exceeded the language models in every correlation
+comparison. These findings indicate that text metadata is at best a coarse
+proxy for chromatin accessibility similarity, and highlight the importance of
+controlling for peak count when comparing chromatin representations across
+public repositories.
 \end{abstract}
 
 \noindent\textbf{Keywords:} ATAC-seq; chromatin accessibility; text embeddings;
@@ -87,23 +92,30 @@ biomedical language models; regulatory potential; ChIP-Atlas; data quality
 % ── Introduction ──────────────────────────────────────────────────────────────
 \section{Introduction}
 
-The rapid growth of epigenomics databases such as ChIP-Atlas~\cite{chipatlas},
-Encyclopedia of DNA Elements (ENCODE)~\cite{encode}, and Roadmap
-Epigenomics~\cite{roadmap} has produced tens of thousands of ATAC-seq
-experiments across diverse human cell types and conditions. Organizing,
-retrieving, and comparing these experiments requires similarity measures that
-reflect the underlying biology. A natural question is how far the text
-metadata attached to each experiment (cell-type labels and descriptions, and
-sample titles) can serve as a proxy for chromatin accessibility similarity.
+The rapid growth of epigenomics databases, such as
+ChIP-Atlas~\cite{chipatlas}, Encyclopedia of DNA Elements
+(ENCODE)~\cite{encode}, and Roadmap Epigenomics~\cite{roadmap}, has produced
+tens of thousands of ATAC-seq experiments across diverse human cell types and
+conditions. These growing repositories provide unprecedented opportunities for
+systematic exploration of chromatin regulatory landscapes, discovery of
+biological knowledge, and development of AI-ready epigenomic datasets.
+Organizing, retrieving, and comparing these experiments requires similarity
+measures that reflect the underlying biology. Text metadata, including
+cell-type annotations, cell-type descriptions, and experiment titles, offers a
+readily accessible representation for indexing and searching these datasets.
+However, it remains unclear whether similarities derived from text metadata
+faithfully reflect the underlying chromatin accessibility profiles.
 
-This question has direct practical implications. If text embeddings of
-experimental metadata closely approximate chromatin-based similarity measures
-(such as those derived from Atacformer or RP), they could enable
-natural-language retrieval and annotation of ATAC-seq data without access to
-the raw signal, which would make large epigenomics repositories easier to use.
-If agreement is limited, the results instead point to fundamental limits on
-what text can capture and motivate investment in chromatin-specific
-representation learning.
+This question has important implications. If text embeddings derived from
+experimental metadata closely approximate chromatin-based similarity measures,
+such as those derived from Atacformer~\cite{atacformer} or regulatory
+potential (RP)~\cite{lisa2}, they could enable natural-language retrieval and
+annotation of ATAC-seq data without requiring processing of raw chromatin
+accessibility profiles. Such capabilities would facilitate the integration and
+reuse of public epigenomic data in AI-driven research. If agreement is
+limited, the results instead point to fundamental limits on what text can
+capture and motivate investment in chromatin-specific representation
+learning.
 
 Recent advances in biomedical natural language processing have produced
 powerful text encoders pretrained on large biomedical corpora.
@@ -112,47 +124,58 @@ full-text articles. SapBERT~\cite{sapbert} and MedCPT~\cite{medcpt} are both
 initialized from a pretrained PubMedBERT checkpoint and further fine-tuned for
 different objectives: SapBERT through self-alignment on Unified Medical
 Language System (UMLS) synonym pairs, and MedCPT through contrastive learning on
-PubMed search logs. These models perform well on biomedical entity
-recognition, relation extraction, and information retrieval, yet whether their
-representations capture the biological relationships encoded in chromatin
-accessibility data has not been systematically evaluated.
+PubMed search logs. Although these models have demonstrated strong performance
+in biomedical entity recognition, relation extraction, and information
+retrieval, whether their representations capture the biological relationships
+encoded in chromatin accessibility data has not been systematically
+evaluated.
 
+In contrast to text-based representations, chromatin-derived embeddings
+directly capture features of the underlying accessibility profiles.
 Atacformer~\cite{atacformer} is a transformer trained on ATAC-seq data with a
 triplet margin loss so that its embeddings cluster by cell type and chromatin
-state. Regulatory potential (RP)~\cite{lisa2} is a simpler, gene-centered
-alternative in which each gene is scored by the peaks near its transcription
-start site (TSS), weighted by their distance from it.
+state. RP~\cite{lisa2} provides a simpler, gene-centered alternative in which
+each gene is scored by the peaks near its transcription start site (TSS),
+weighted by their distance from it.
 
-We compare pairwise cosine similarity matrices from 12 embedding types (two
-chromatin representations, four language models applied to full metadata and
-to cell-type names, TF-IDF, and a random baseline) across 32,245 curated human
-ATAC-seq experiments, treating both agreement and disagreement as informative
-findings. Public repositories mix experiments of very different quality, so we
-also examine how the number of called peaks affects these comparisons, and we
-base our primary analysis on experiments with at least 5,000 peaks.
+Here, we systematically evaluate pairwise cosine similarity matrices
+constructed from the 12 embedding types (two chromatin representations, four
+language models applied to full metadata and to cell-type names, TF-IDF, and a
+random baseline) across 32,245 curated human ATAC-seq experiments, treating
+both agreement and disagreement as informative findings. Since public
+repositories mix experiments of very different quality, we further examine
+how the number of called peaks affects representation similarity and focus
+our primary analysis on the 17,232 experiments with at least 5,000 peaks.
 
 The key findings are:
 \begin{itemize}
-  \setlength{\itemsep}{0pt}
-  \setlength{\parsep}{0pt}
-  \setlength{\topsep}{0pt}
-  \item Peak count strongly shapes similarity in both chromatin
-        representations. Experiments with few peaks consist mostly of promoter
-        peaks, and they inflate apparent text-chromatin agreement on the full
-        dataset.
-  \item In experiments with at least 5,000 peaks, text barely tracks
-        Atacformer similarity and tracks RP only weakly, mostly through coarse
+  \setlength{\itemsep}{2pt}
+  \item \textbf{Peak count strongly shapes similarity in both chromatin
+        representations.} Experiments with relatively few peaks consist mostly
+        of promoter peaks, and they inflate apparent text-chromatin agreement
+        on the full dataset.
+  \item \textbf{Text-derived similarities show limited agreement with
+        chromatin-based representations.} In experiments with at least 5,000
+        peaks, text-derived similarities showed negligible agreement with
+        Atacformer and only weak agreement with RP, mostly through coarse
         cell-type identity.
-  \item TF-IDF matches all four language models. On the full dataset, most of
-        the text signal comes from sample titles, which reflect data provenance
-        more than biology.
+  \item \textbf{Pretrained language models offer little improvement over
+        TF-IDF.} TF-IDF performed comparably to all four language models. On
+        the full dataset, most of the text-derived signal comes from sample
+        titles that reflect data provenance more than biological
+        characteristics.
 \end{itemize}
+
+\noindent Together, these findings highlight the limitations of metadata-based
+embeddings as proxies for chromatin accessibility similarity and underscore the
+need for biologically grounded representations to support reliable data
+retrieval, integration, and knowledge discovery in epigenomic repositories.
 
 % ── Methods ───────────────────────────────────────────────────────────────────
 \section{Methods}
 
 Fig.~\ref{fig:schematic} summarizes the study design. Chromatin-based
-embeddings (Atacformer, RP) and text-based embeddings (language models,
+embeddings (Atacformer and RP) and text-based embeddings (language models,
 TF-IDF, and a random baseline) are computed for each experiment, converted into
 pairwise similarity matrices at the cell-type and experiment levels, and
 compared using the metrics described in Section~\ref{sec:metrics}.
@@ -199,53 +222,54 @@ tokens were mean-pooled to produce a 192-dimensional embedding per experiment.
 
 \subsection{Regulatory Potential Embeddings}
 
-We computed RP for each experiment using a LISA2-style exponential decay
-model~\cite{lisa2}. Each peak's contribution to a gene is weighted by
-$w(d) = e^{-d/10\,\text{kb}}$, where $d$ is the distance to the gene's TSS,
-and peaks overlapping annotated exons receive a fixed weight of 1.0 instead.
-Summing over all peaks gives a per-gene RP score, and stacking these scores
-over all hg38 autosomal gene TSSs maps each experiment to a
-40,772-dimensional vector.
+We computed RP scores for each experiment using a LISA2-style exponential
+decay model~\cite{lisa2}. Each peak's contribution to a gene is weighted by
+$w(d) = e^{-d/10\,\text{kb}}$, where $d$ is the distance to the gene's
+transcription start site (TSS), and peaks overlapping annotated exons receive a
+fixed weight of 1.0 instead. Summing over all peaks gives a per-gene RP score,
+and stacking these scores over all hg38 autosomal gene TSSs maps each
+experiment to a 40,772-dimensional RP vector.
 
 \subsection{Text Embeddings}
 \label{sec:text_emb}
 
-For each experiment we built a metadata string by concatenating the available
-fields in the form
+For each experiment, we built a metadata string by concatenating the
+available fields in the form
 \begin{center}
 \texttt{\{cell\_type\}. \{cell\_type\_class\}. \{cell\_type\_description\}. \{title\}.}
 \end{center}
-The description is the ChIP-Atlas cell-type description (for
-example, primary tissue and diagnosis), and the title is the experiment title
-from the sequencing archive record. We embedded this string with four
-encoders, each producing 768-dimensional embeddings. Three are biomedical
-models: PubMedBERT~\cite{pubmedbert}
-(\nolinkurl{microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext}, mean
-pooling), SapBERT~\cite{sapbert}
-(\nolinkurl{cambridgeltl/SapBERT-from-PubMedBERT-fulltext}, classification token
-(CLS) pooling), and MedCPT~\cite{medcpt} (\nolinkurl{ncbi/MedCPT-Query-Encoder},
-mean pooling). The fourth is a general-domain sentence
-encoder~\cite{mpnet} (\nolinkurl{sentence-transformers/all-mpnet-base-v2}, mean
-pooling), which we call General. We refer to the four encoders as language
-models (LMs). To isolate the contribution of cell-type identity, we also
-encoded the cell-type name alone with all four models (name-only variants). We
-additionally computed TF-IDF embeddings (top 2,048 features, sublinear term
-frequency, 2,048-dimensional) and a random Gaussian baseline (192-dimensional,
-seed 42).
+The description is the ChIP-Atlas cell-type description (for example, primary
+tissue and diagnosis), and the title is the experiment title from the
+sequencing archive record. We embedded this string with four encoders, each
+producing 768-dimensional embeddings. Three are biomedical models:
+PubMedBERT~\cite{pubmedbert}
+(\nolinkurl{microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext},
+mean pooling), SapBERT~\cite{sapbert}
+(\nolinkurl{cambridgeltl/SapBERT-from-PubMedBERT-fulltext}, classification
+token (CLS) pooling), and MedCPT~\cite{medcpt}
+(\nolinkurl{ncbi/MedCPT-Query-Encoder}, mean pooling). The fourth is a
+general-domain sentence encoder~\cite{mpnet}
+(\nolinkurl{sentence-transformers/all-mpnet-base-v2}, mean pooling), which we
+call General. We refer to the four encoders as language models (LMs). To
+isolate the contribution of cell-type identity, we also encoded the cell-type
+name alone with all four models (name-only variants). We additionally
+computed TF-IDF embeddings (top 2,048 features, sublinear term frequency,
+2,048-dimensional) and a random Gaussian baseline (192-dimensional, seed 42).
 
 \subsection{Similarity Matrices and Comparison Metrics}
 \label{sec:metrics}
 
-For each embedding type we built pairwise cosine similarity matrices at two
-levels.
+For each embedding type, we constructed pairwise cosine similarity matrices at
+two levels.
 
 \textit{Cell-type level.} Experiment embeddings were mean-pooled within each
 cell type to give one vector per cell type. A corpus mean vector, computed from
 an arbitrary subset of 10,000 experiment embeddings, was subtracted from each
 cell-type vector. For every pair of cell types $(i, j)$, the cosine similarity
 between their centered vectors was stored in entry $(i, j)$, giving a
-symmetric matrix ($1{,}108 \times 1{,}108$ for the full dataset) with ones on
-the diagonal.
+symmetric matrix with ones on the diagonal. For the full dataset, this matrix
+is $1{,}108 \times 1{,}108$, with one row and one column for each of the 1,108
+cell types annotated in ChIP-Atlas.
 
 \textit{Experiment level.} The same centering was applied to individual
 experiment embeddings, and the cosine similarity between every pair of
@@ -261,12 +285,16 @@ aggregation.
 
 We compared each text-embedding similarity matrix with each chromatin
 reference (Atacformer and RP) in three ways. The main measure was the
-Spearman rank correlation ($\rho$) between upper-triangle entries, with
-bootstrap 95\% confidence intervals (CIs) from 1,000 resamples of cell types
-or experiments (50,000 randomly sampled pairs per resample). At the cell-type
-level we also ran one-sided Mantel permutation tests (1,000 permutations).
-Finally, we measured top-$k$ neighborhood overlap, the mean fraction of shared
-top-$k$ nearest neighbors, for $k \in \{5, 10, 20, 50\}$.
+Spearman rank correlation ($\rho$) between the upper-triangle entries of the
+two matrices, with bootstrap 95\% confidence intervals (CIs) from 1,000
+resamples of cell types or experiments (50,000 randomly sampled pairs per
+resample). At the cell-type level, we also ran one-sided Mantel permutation
+tests (1,000 permutations). Finally, we measured top-$k$ neighborhood overlap
+at the experiment level. For each experiment, we took its $k$ most similar
+experiments in the text-embedding similarity matrix and its $k$ most similar
+experiments in the chromatin similarity matrix, and recorded the fraction of
+experiments shared between the two lists. The top-$k$ overlap is this fraction
+averaged over all experiments, for $k \in \{5, 10, 20, 50\}$.
 
 For the primary analysis, cell-type vectors were recomputed from well-covered
 experiments only (954 cell types), and experiment-level matrices were
@@ -277,40 +305,48 @@ $2 \times 10^6$ randomly sampled pairs.
 \subsection{Technical Covariates and Sensitivity Analyses}
 \label{sec:tech_methods}
 
-For each experiment we recorded the number of peaks in its BED file and the
+For each experiment, we recorded the number of peaks in its BED file and the
 fraction of peaks whose midpoint lies within 1~kb of an annotated RefSeq TSS
 (the hg38 annotation used for RP). For a pair of experiments with $n_i$ and
 $n_j$ peaks, we defined \textit{depth match} as
 $-|\log_{10} n_i - \log_{10} n_j|$ and \textit{mean depth} as
-$(\log_{10} n_i + \log_{10} n_j)/2$. On the full dataset we used these
-quantities in four analyses: (i) Spearman correlations within peak-count
+$(\log_{10} n_i + \log_{10} n_j)/2$.
+
+We used these covariates in four sensitivity analyses, each testing whether an
+observed agreement depends on a technical factor rather than on biology. All
+four were run on the full dataset: (i) Spearman correlations within peak-count
 strata, using pairs in which both experiments have fewer than 1,000, 1,000 to
 5,000, 5,000 to 10,000, or at least 10,000 peaks; (ii) partial Spearman
-correlations controlling for depth match and mean depth, and separately for
-indicators of shared cell type and shared cell-type class, computed by
-regressing the covariate ranks out of each variable's ranks; (iii) a
-title-only TF-IDF embedding with the same settings, fit on the title field
-alone and corpus-centered, to isolate the contribution of sample titles; and
-(iv) recomputation of the Atacformer, RP, full-text LM, and TF-IDF
-similarities without corpus centering. Uncertainty for partial correlations
-was estimated with an experiment-level block bootstrap (1,000 resamples of
-experiments, 200,000 pairs each).
+correlations (Section~\ref{sec:lm_tfidf}) controlling for depth match and mean
+depth, and separately for indicators of shared cell type and shared cell-type
+class, computed by regressing the covariate ranks out of each variable's
+ranks; (iii) a title-only TF-IDF embedding with the same settings, fit on the
+title field alone and corpus-centered, to isolate the contribution of sample
+titles; and (iv) recomputation of the Atacformer, RP, full-text LM, and TF-IDF
+similarities without corpus centering, to test whether the results depend on
+centering.
+
+Separately from these sensitivity analyses, we quantified the statistical
+uncertainty of every partial correlation reported in this study, including
+those in Section~\ref{sec:lm_tfidf}, with an experiment-level block bootstrap
+(1,000 resamples of experiments, 200,000 pairs each).
 
 \subsection{Comparing Language Models with TF-IDF}
+\label{sec:lm_tfidf}
 
-To test whether the LMs capture information related to chromatin similarity
-beyond vocabulary overlap, we compared the full-text LM embeddings with TF-IDF
-in three ways.
+To assess whether the language model (LM) embeddings capture information
+related to chromatin similarity beyond vocabulary overlap, we compared the
+full-text LM embeddings with TF-IDF representations in three ways.
 
 \textit{Pairwise similarity scatter.} On the full dataset, we sampled 25,000
 random experiment pairs, plotted TF-IDF similarity against LM similarity, and
 colored each point by Atacformer similarity. Points above the diagonal are
-pairs that the LM scores higher than TF-IDF. We also computed the Spearman
-correlation between the TF-IDF and LM similarities on the same pairs.
+pairs where the LM score is higher than the TF-IDF score. We also computed the
+Spearman correlation between the TF-IDF and LM similarities on the same pairs.
 
 \textit{Partial correlation.} We computed the partial Spearman correlation of
 each LM similarity matrix with each chromatin reference, controlling for
-TF-IDF. For Atacformer (AC), this is
+TF-IDF (TF). For Atacformer (AC), this is
 \begin{equation}
   \rho_{LM,AC \mid TF} =
     \frac{\rho_{LM,AC} - \rho_{LM,TF}\,\rho_{AC,TF}}
@@ -339,33 +375,40 @@ reproduces TF-IDF.
 Experiments with few peaks consist mostly of promoter peaks
 (Fig.~\ref{fig:coverage}a). In every peak-count bin between 100 and 10,000
 peaks, the median experiment had 69 to 75\% of its peaks within 1~kb of a TSS.
-The fraction fell to 57\% at 10,000 to 20,000 peaks, 39\% at 20,000 to 50,000
-peaks, and 24\% above 50,000 peaks. The 1,689 experiments with fewer than 100
-peaks were an exception (median 42\%). Promoters of broadly expressed genes are
-accessible in most cell types, so experiments that retain mainly promoter
-peaks tend to resemble one another whatever their cell type.
+The fraction progressively decreased with increasing peak count, to 57\% in
+experiments with 10,000 to 20,000 peaks, 39\% in those with 20,000 to 50,000
+peaks, and 24\% in those with more than 50,000 peaks. The 1,689 experiments
+with fewer than 100 peaks were an exception, exhibiting a median
+promoter-proximal peak fraction of 42\%. Because promoters of broadly
+expressed genes are accessible in most cell types, experiments that retain
+mainly promoter peaks tend to resemble one another regardless of cell-type
+identity.
 
-Peak count is also strongly associated with similarity in both chromatin
+Peak count was also strongly associated with similarity in both chromatin
 representations. On the full dataset, Atacformer similarity correlated with
 depth match (Section~\ref{sec:tech_methods}) at $\rho = 0.66$ and RP
-similarity at $\rho = 0.59$, more strongly than any text embedding correlated
-with either reference. After controlling for depth match and mean depth, the
-experiment-level correlation between Atacformer and RP dropped from 0.22 to
-$-0.02$. Peak count matters within cell types as well. Across 406 cell types
-with at least 10 experiments, mean within-cell-type Atacformer similarity was
-lower in cell types with a wider spread of peak counts (Spearman
-$\rho = -0.77$ against the standard deviation of $\log_{10}$ peak count; RP:
-$\rho = -0.71$).
+similarity at $\rho = 0.59$. Both associations were stronger than any
+correlation observed for a text embedding. After controlling for depth match
+and mean depth, the experiment-level correlation between Atacformer and RP
+decreased from 0.22 to $-0.02$. Peak count matters within cell types as well.
+Across 406 cell types with at least 10 experiments, mean within-cell-type
+Atacformer similarity was lower in cell types with a wider spread of peak
+counts (Spearman $\rho = -0.77$ against the standard deviation of
+$\log_{10}$ peak count; RP: $\rho = -0.71$). These findings highlight peak
+count as an important factor influencing chromatin-based similarity, even
+among experiments sharing the same cell-type annotation.
 
-Text-Atacformer agreement on the full dataset comes mostly from low-peak
-experiments (Fig.~\ref{fig:coverage}b). When both experiments in a pair have
-fewer than 1,000 peaks, text embeddings correlate with Atacformer at
-$\rho = 0.38$ to $0.41$. The correlation drops to 0.08 to 0.09 at 1,000 to
-5,000 peaks, 0.02 to 0.04 at 5,000 to 10,000 peaks, and 0.007 to 0.012 at
-10,000 peaks or more. Agreement with RP behaves differently
-(Fig.~\ref{fig:coverage}c). It is lowest in the two low-peak strata
-($\rho = 0.04$ to $0.10$) and higher in the two well-covered strata
-($\rho = 0.08$ to $0.17$).
+Text-Atacformer agreement on the full dataset was largely driven by low-peak
+experiments (Fig.~\ref{fig:coverage}b). When both experiments in a pair had
+fewer than 1,000 peaks, correlations between text-derived and Atacformer
+similarities were highest, at $\rho = 0.38$ to $0.41$. The correlation dropped
+to 0.08 to 0.09 at 1,000 to 5,000 peaks, 0.02 to 0.04 at 5,000 to 10,000
+peaks, and 0.007 to 0.012 at 10,000 peaks or more. Agreement with RP behaved
+differently (Fig.~\ref{fig:coverage}c). It was lowest in the two low-peak
+strata ($\rho = 0.04$ to $0.10$) and higher in the two well-covered strata
+($\rho = 0.08$ to $0.17$). These contrasting patterns suggest that the
+relationship between text-derived and chromatin-derived similarities depends
+strongly on peak count and differs substantially between Atacformer and RP.
 
 Within the metadata, most of the signal comes from sample titles. On the same
 $2 \times 10^6$ pairs, a TF-IDF embedding of the title field alone correlated
@@ -378,18 +421,21 @@ Atacformer to 0.04 to 0.06. The titles are archive sample names such as
 ``GSM3381886: F 2 p; Homo sapiens; ATAC-seq'' or ``Illumina HiSeq 2500
 sequencing of SAMD00123421''. Many of them name only the submission or the
 sequencing platform, so the shared signal most likely reflects data
-provenance. Provenance is also tied to peak count. Controlling for depth
-match and mean depth reduced the title-only correlation with Atacformer from
-0.275 to 0.092. Cell-type labels, by comparison, explained little of the
-full-dataset correlation. Controlling for shared cell type and shared
-cell-type class reduced PubMedBERT's correlation with Atacformer only from
-0.275 to 0.254.
+provenance. Provenance is also tied to peak count. Controlling for depth match
+and mean depth reduced the title-only correlation with Atacformer from 0.275 to
+0.092. Cell-type labels, by comparison, explained little of the full-dataset
+correlation. Controlling for shared cell type and shared cell-type class
+reduced PubMedBERT's correlation with Atacformer only from 0.275 to 0.254.
+These results suggest that the apparent agreement between metadata-derived and
+Atacformer similarities is more strongly associated with sample provenance and
+peak-count-related variation than with annotated cell-type identity.
 
-We therefore base our primary analysis on well-covered experiments
-($\geq$5,000 peaks). The threshold is pragmatic. Experiments with 5,000 to
-10,000 peaks are still promoter-rich (Fig.~\ref{fig:coverage}a), but
-experiment-level correlations computed with a 10,000-peak threshold lead to
-the same conclusions.
+We therefore restricted our primary analysis to well-covered experiments with
+at least 5,000 peaks. The threshold was selected pragmatically. Although
+experiments with 5,000 to 10,000 peaks remained enriched for promoters
+(Fig.~\ref{fig:coverage}a), experiment-level analyses using a more stringent
+threshold of 10,000 peaks yielded consistent conclusions. These results support
+the robustness of our findings to the choice of peak-count threshold.
 
 \begin{figure}[!htbp]
   \centering
@@ -407,10 +453,13 @@ the same conclusions.
 
 \subsection{Text Weakly Tracks RP but Not Atacformer in Well-Covered Experiments}
 
-As a sanity check, we embedded 34 representative cell types by averaging over
-all of their experiments (Fig.~\ref{fig:s1}). Atacformer and RP showed
+To qualitatively assess whether the different representations capture
+biologically meaningful relationships, we generated cell-type-level embeddings
+for 34 representative cell types by averaging the embeddings across their
+corresponding experiments (Fig.~\ref{fig:s1}). Atacformer and RP showed
 coherent lineage structure, with immune, neural, and cancer cell types forming
-distinct groups, while the text embeddings showed coarser organization.
+distinct groups, whereas the text embeddings showed less clearly resolved
+biological organization.
 
 \begin{figure}[!htbp]
   \centering
@@ -425,24 +474,25 @@ distinct groups, while the text embeddings showed coarser organization.
   \label{fig:s1}
 \end{figure}
 
-Table~\ref{tab:spearman} summarizes agreement in the 17,232 well-covered
-experiments (954 cell types). Text embeddings showed no positive agreement
-with Atacformer. At the cell-type level, the correlations of the full-text LMs
-and TF-IDF with Atacformer were zero or slightly negative
-($\rho = -0.074$ to $-0.023$; one-sided Mantel $p > 0.98$). At the experiment
-level they were close to zero ($\rho = 0.011$ to $0.016$), compared with 0.20
-to 0.30 on the full dataset. Agreement with RP was weak but consistent. The
-full-text LMs and TF-IDF correlated with RP at $\rho = 0.038$ to $0.068$ at
-the cell-type level (Mantel $p = 0.001$) and at 0.061 to 0.098 at the
-experiment level. Atacformer and RP agreed with each other at the cell-type
-level ($\rho = 0.365$) but only modestly at the experiment level
-($\rho = 0.107$).
+Table~\ref{tab:spearman} summarizes agreement among embedding representations
+across the 17,232 well-covered experiments spanning 954 cell types. Text
+embeddings showed no positive agreement with Atacformer. At the cell-type
+level, the correlations of the full-text LMs and TF-IDF with Atacformer were
+zero or slightly negative ($\rho = -0.074$ to $-0.023$; one-sided Mantel
+$p > 0.98$). At the experiment level, they were close to zero
+($\rho = 0.011$ to $0.016$), compared with 0.20 to 0.30 on the full dataset.
+Agreement with RP was weak but consistent. The full-text LMs and TF-IDF
+correlated with RP at $\rho = 0.038$ to $0.068$ at the cell-type level (Mantel
+$p = 0.001$) and at 0.061 to 0.098 at the experiment level (full-dataset
+values in Table~\ref{tab:spearman} and Fig.~\ref{fig:s2}). Atacformer and RP
+agreed with each other at the cell-type level ($\rho = 0.365$) but only
+modestly at the experiment level ($\rho = 0.107$).
 
-At the cell-type level, the name-only variants agreed with RP much less than
-the full-text models ($\rho = 0.003$ to $0.021$ vs.\ 0.038 to 0.068), so the
-description and title fields add information beyond the cell-type name. At
-the experiment level the gap was smaller ($\rho = 0.035$ to $0.080$ for the
-name-only variants).
+In contrast, at the cell-type level, the name-only variants agreed with RP
+much less than the full-text models ($\rho = 0.003$ to $0.021$ vs.\ 0.038 to
+0.068), suggesting that the cell-type description and title fields provide
+additional information beyond the cell-type name. At the experiment level,
+the gap was smaller ($\rho = 0.035$ to $0.080$ for the name-only variants).
 
 \begin{table}[!htbp]
   \centering\footnotesize
@@ -454,7 +504,8 @@ name-only variants).
   Significance markers (one-sided Mantel test for positive association, 1,000
   permutations) are given for the cell-type level only.}
   \label{tab:spearman}
-  \setlength{\tabcolsep}{4pt}
+  \setlength{\tabcolsep}{3pt}
+  \resizebox{\textwidth}{!}{%
   \begin{tabular}{l ccc ccc}
     \toprule
     & \multicolumn{3}{c}{vs.\ Atacformer} & \multicolumn{3}{c}{vs.\ RP} \\
@@ -475,7 +526,7 @@ name-only variants).
     General (name only)      & $-0.060^{ns}$  & $0.006$ [$-$0.003, 0.016] & $0.090$ & $0.015^{*}$   & $0.039$ [0.030, 0.048]    & $0.010$ \\
     Random Gaussian          & $0.003^{*}$    & $0.000$ [$-$0.008, 0.009] & $0.000$ & $0.003^{*}$   & $0.000$ [$-$0.009, 0.009] & $0.000$ \\
     \bottomrule
-  \end{tabular}
+  \end{tabular}}
   \\[3pt]
   {\footnotesize $^{***}p \leq 0.001$; $^{*}p < 0.05$; $^{ns}$ not significant.
   The small random-baseline correlation at the cell-type level likely reflects
@@ -486,7 +537,7 @@ name-only variants).
 \subsection{Language Models Add Little Beyond Vocabulary Overlap}
 \label{sec:partial_corr}
 
-In well-covered experiments, TF-IDF fell within the range of the four LMs on
+In well-covered experiments, TF-IDF performed comparably to the four LMs on
 every correlation in Table~\ref{tab:spearman}. After controlling for TF-IDF,
 partial correlations with Atacformer were near zero for all four LMs
 ($\rho_{\mathrm{partial}} = 0.000$ to $0.006$; all bootstrap 95\% CIs within
@@ -494,107 +545,79 @@ $-0.004$ to $0.011$). Partial correlations with RP were small for MedCPT,
 General, and SapBERT ($\rho_{\mathrm{partial}} = 0.046$, 0.046, and 0.037) and
 near zero for PubMedBERT (0.003). LM and TF-IDF similarities were strongly
 correlated ($\rho = 0.52$ to $0.73$), and 44 to 45\% of each LM's top-5
-neighbors were also TF-IDF neighbors.
+neighbors were also TF-IDF neighbors. These results suggest that pretrained
+language models capture limited additional chromatin-relevant similarity
+beyond that represented by TF-IDF.
 
-On the full dataset (Figs.~\ref{fig:decomp} to~\ref{fig:s3b}), PubMedBERT
-($\rho_{\mathrm{partial}} = 0.051$; 95\% CI 0.048 to 0.059) and SapBERT
-(0.045; CI 0.039 to 0.049) kept positive partial correlations with
-Atacformer, whereas MedCPT ($-0.030$) and General ($-0.042$) did not. This
-difference holds up under experiment-level resampling, but it disappears in
-well-covered experiments and depends on corpus centering. Without centering,
-PubMedBERT, SapBERT, and MedCPT all have clearly positive partial correlations
-(0.14 to 0.26), and PubMedBERT ($\rho = 0.292$) has a higher raw correlation
-with Atacformer than TF-IDF does ($\rho = 0.153$). We therefore do not read
-the full-dataset differences among LMs as evidence about their pretraining or
-fine-tuning objectives.
+On the full dataset (Fig.~\ref{fig:decomp}; Figs.~\ref{fig:decomp_b}
+to~\ref{fig:s3b}), PubMedBERT ($\rho_{\mathrm{partial}} = 0.051$; 95\% CI
+0.048 to 0.059) and SapBERT (0.045; CI 0.039 to 0.049) kept positive partial
+correlations with Atacformer, whereas MedCPT ($-0.030$) and General
+($-0.042$) did not. This difference holds up under experiment-level
+resampling, but it disappears in well-covered experiments and depends on
+corpus centering. Without centering, PubMedBERT, SapBERT, and MedCPT all have
+clearly positive partial correlations (0.14 to 0.26), and PubMedBERT
+($\rho = 0.292$) has a higher raw correlation with Atacformer than TF-IDF does
+($\rho = 0.153$). Therefore, we do not interpret the full-dataset differences
+among LMs as evidence about their pretraining or fine-tuning objectives.
 
 \begin{figure}[!htbp]
   \centering
-  \begin{minipage}[t]{0.48\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{fig4a.png}
-    \caption{Spearman correlation with Atacformer (solid bars) and partial
+  \includegraphics[width=0.62\textwidth]{fig4a.png}
+  \caption{Spearman correlation with Atacformer (solid bars) and partial
   correlation after controlling for TF-IDF (hatched bars) for each LM on the
   full dataset. The significance markers in the panel come from tests that
   treat the sampled pairs as independent; experiment-level bootstrap CIs are
   given in Section~\ref{sec:partial_corr}. In well-covered experiments, all
   four partial correlations are at most 0.006.}
-    \label{fig:decomp}
-  \end{minipage}\hfill
-  \begin{minipage}[t]{0.48\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{fig4b.png}
-    \caption{Fraction of each LM's top-$k$ nearest neighbors that are also
-  TF-IDF neighbors on the full dataset (about 33\% at $k=5$; 44 to 45\% in
-  well-covered experiments).}
-    \label{fig:decomp_b}
-  \end{minipage}
+  \label{fig:decomp}
 \end{figure}
-
-
-\begin{figure}[!htbp]
-  \centering
-  \begin{minipage}[t]{0.48\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{figS3a.png}
-    \caption{TF-IDF similarity ($x$-axis) against LM similarity ($y$-axis,
-  labeled LLM) for 25,000 random experiment pairs from the full dataset,
-  colored by Atacformer similarity (warmer colors indicate higher
-  similarity). Points above the diagonal are pairs that the LM scores higher
-  than TF-IDF. Panel titles give the Spearman correlation between the two
-  similarities.}
-    \label{fig:s3a}
-  \end{minipage}\hfill
-  \begin{minipage}[t]{0.48\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{figS3b.png}
-    \caption{Atacformer similarity for pairs below and above the diagonal in
-  Fig.~\ref{fig:s3a} (full dataset; Welch's $t$-test). For all four LMs,
-  pairs above the diagonal have higher mean Atacformer similarity (PubMedBERT:
-  0.070 vs.\ 0.013; SapBERT: 0.059 vs.\ 0.027; MedCPT: 0.060 vs.\ 0.028;
-  General: 0.051 vs.\ 0.037). The corresponding effect sizes (Cohen's $d$) are
-  0.38, 0.22, 0.21, and 0.09.}
-    \label{fig:s3b}
-  \end{minipage}
-\end{figure}
-
 
 \subsection{Text Shares Local Structure with RP but Not Atacformer}
 
-Nearest-neighbor overlap showed the same split between the two references.
-In well-covered experiments, the full-text LMs shared 31 to 35\% of their
-top-5 neighbors with RP (PubMedBERT 34.7\%, SapBERT 34.2\%, General 32.8\%,
-MedCPT 30.9\%), TF-IDF shared 28.2\%, and the name-only variants about 12\%.
-With Atacformer, every text embedding shared less than 0.1\% of its top-5
-neighbors, against 0.03\% expected by chance, and Atacformer and RP shared
-only 0.1\% with each other. On the full dataset the corresponding values were
-20 to 23\% for RP and 2 to 3\% for Atacformer (Figs.~\ref{fig:topk}
-to~\ref{fig:s2}).
+Nearest-neighbor analyses further revealed the same striking differences
+between the text-based embeddings and the two chromatin-based
+representations. In well-covered experiments, the full-text LMs shared 31 to
+35\% of their top-5 neighbors with RP (PubMedBERT 34.7\%, SapBERT 34.2\%,
+General 32.8\%, MedCPT 30.9\%), TF-IDF shared 28.2\%, and the name-only
+variants about 12\%. In contrast, all text-based embeddings shared fewer than
+0.1\% of their top-5 neighbors with Atacformer, only slightly above the 0.03\%
+expected by chance. Notably, Atacformer and RP themselves shared only 0.1\% of
+their nearest neighbors, indicating that the two chromatin representations
+capture substantially different relationships among experiments. Across the
+full dataset, the corresponding values were 20 to 23\% for RP and 2 to 3\% for
+Atacformer (Figs.~\ref{fig:topk} and~\ref{fig:topk_rp}).
 
-Neighborhood purity helps explain the difference. In well-covered
-experiments, 76\% of an experiment's top-5 RP neighbors shared its cell-type
-label (93 to 96\% for the full-text embeddings), compared with 1.3\% for
-Atacformer, barely above the 0.8\% expected by chance. On the full dataset the
-values were 72\% for RP and 21\% for Atacformer. Within well-covered
-experiments, Atacformer similarity was only weakly related to depth match
-($\rho = 0.06$), but RP similarity was still strongly related to it
-($\rho = 0.57$). Experiments of the same cell type were also far more similar
-to each other under RP than under Atacformer (median within-cell-type
-similarity 0.51 vs.\ 0.17 across 796 cell types with at least two
-well-covered experiments; Atacformer lower for 96.7\% of cell types; Wilcoxon
-signed-rank $p = 1.1 \times 10^{-125}$). The full-dataset versions of this
-comparison are shown in Figs.~\ref{fig:s4} and~\ref{fig:s4b}.
+Differences in cell-type neighborhood purity provided further insight into
+this divergence. In well-covered experiments, 76\% of an experiment's top-5 RP
+neighbors shared its cell-type label (93 to 96\% for the full-text
+embeddings), compared with only 1.3\% for Atacformer, barely above the 0.8\%
+expected by chance. On the full dataset, the values were 72\% for RP and 21\%
+for Atacformer. Within well-covered experiments, Atacformer similarity was
+only weakly related to depth match ($\rho = 0.06$), whereas RP similarity
+remained strongly related to it ($\rho = 0.57$).
+
+We also asked how similar experiments with the same cell-type label are to one
+another under each representation. For each of the 796 cell types with at
+least two well-covered experiments, we computed the within-cell-type
+similarity, the mean cosine similarity over all pairs of that cell type's
+experiments. Across these cell types, the median within-cell-type similarity
+was 0.51 for RP but only 0.17 for Atacformer, and Atacformer gave the lower
+value for 96.7\% of cell types (paired Wilcoxon signed-rank test,
+$p = 1.1 \times 10^{-125}$). In other words, RP places experiments of the same
+cell type close together, whereas Atacformer does not. The same comparison on
+the full dataset is shown in Figs.~\ref{fig:s4} and~\ref{fig:s4b}.
 
 RP thus reflects cell-type identity, which text metadata also encodes,
-although RP remains sensitive to peak count. Individual Atacformer embeddings
-of well-covered experiments, in contrast, carry little cell-type information.
-Their nearest neighbors rarely share a cell type, even though cell-type
-averages still agree with RP. The low agreement between text and Atacformer
-is therefore not evidence that Atacformer captures finer biological variation
-that text misses. One possible explanation, which we did not test, is that each
-Atacformer embedding averages at most 1,024 randomly sampled peaks
-(Section~\ref{sec:atacformer}), a small and variable fraction of the peaks in
-a well-covered experiment.
+although RP remains sensitive to peak count. In contrast, individual
+Atacformer embeddings of well-covered experiments carry little cell-type
+information. Their nearest neighbors rarely share a cell type, even though
+cell-type averages still agree with RP. Therefore, the low agreement between
+text and Atacformer is not evidence that Atacformer captures finer biological
+variation that text misses. One possible explanation, which we did not test,
+is that each Atacformer embedding averages at most 1,024 randomly sampled
+peaks (Section~\ref{sec:atacformer}), a small and variable fraction of the
+peaks in a well-covered experiment.
 
 Tables~\ref{tab:qual_atac} and~\ref{tab:qual_rp} list full-dataset pairs with
 high chromatin similarity but low TF-IDF similarity. Many of these pairs
@@ -608,32 +631,164 @@ peaks. The remaining Atacformer pairs vary more in peak count.
   \begin{minipage}[t]{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{fig3a.png}
-    \caption{Top-$k$ neighborhood overlap with Atacformer on the full dataset.
-  Full-text models share about 2 to 3\% of nearest neighbors with Atacformer
-  at $k=5$ (less than 0.1\% in well-covered experiments).}
+    \caption{Top-$k$ neighborhood overlap with Atacformer on the full
+    dataset. Full-text models share about 2 to 3\% of nearest neighbors with
+    Atacformer at $k=5$ (less than 0.1\% in well-covered experiments).}
     \label{fig:topk}
   \end{minipage}\hfill
   \begin{minipage}[t]{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{fig3b.png}
     \caption{Top-$k$ neighborhood overlap with RP on the full dataset.
-  Full-text LMs share about 20 to 23\% of nearest neighbors with RP at $k=5$
-  (31 to 35\% in well-covered experiments).}
+    Full-text LMs share about 20 to 23\% of nearest neighbors with RP at
+    $k=5$ (31 to 35\% in well-covered experiments).}
     \label{fig:topk_rp}
   \end{minipage}
 \end{figure}
 
+% ── Discussion ────────────────────────────────────────────────────────────────
+\section{Discussion}
+
+In this study, we systematically evaluated how well text-based
+representations of experimental metadata capture chromatin accessibility
+similarity across 32,245 human ATAC-seq experiments from ChIP-Atlas. We
+compared embeddings derived from biomedical and general-domain language models
+and TF-IDF against two chromatin-based representations, Atacformer and RP. Our
+results reveal substantial limitations in using experimental metadata as a
+proxy for chromatin accessibility similarity, with the observed agreement
+strongly influenced by peak count and sample provenance.
+
+On the full ChIP-Atlas set, text embeddings correlated with Atacformer
+similarity at $\rho = 0.20$ to $0.30$. However, most of this agreement came
+from low-peak experiments, whose promoter-dominated peak sets make them look
+alike in both chromatin representations, and from sample titles, which reflect
+data provenance and are tied to peak count. Among well-covered experiments,
+text embeddings barely tracked Atacformer similarity.
+
+In contrast, text-derived and RP similarities showed weak but consistent
+agreement ($\rho = 0.06$ to $0.10$ at the experiment level), with 28 to 35\%
+of top-5 neighbors shared. RP neighborhoods are strongly enriched for
+experiments sharing cell-type annotations, and text metadata recovers this
+coarse structure. These findings indicate that metadata may be useful for
+coarse, cell-type-level retrieval, but it should not substitute for chromatin
+similarity in finer-grained applications.
+
+Language models provided limited additional information beyond simple lexical
+representation. In well-covered experiments, TF-IDF performed comparably to
+all four LMs, and partial correlations after TF-IDF adjustment were near zero
+for Atacformer and small for RP. Although PubMedBERT and SapBERT appeared to
+outperform MedCPT and General on the full dataset, these differences
+disappeared after restricting the analysis to well-covered experiments and
+were sensitive to corpus centering.
+
+The peak-count effect matters beyond text. Similarities in both
+chromatin-based representations were more strongly associated with peak count
+than with any other variable we examined, and controlling for peak count
+substantially reduced the experiment-level agreement between Atacformer and RP
+on the full dataset. These findings identify peak-count heterogeneity as an
+important consideration when evaluating chromatin representations across
+large public repositories. Stratification or statistical adjustment for peak
+count, together with additional assay-quality measures, may help distinguish
+biologically meaningful similarities from variation associated with
+experimental coverage and data processing.
+
+This study has several limitations. Atacformer and RP were used as proxies for
+chromatin biology without validation against an external ground truth. Both
+were derived from the same ChIP-Atlas peak calls and were sensitive to peak
+count, while the Atacformer embeddings used here carry little cell-type
+information for individual well-covered experiments. Our conclusions are
+therefore bounded by how faithfully these representations capture the biology
+they stand for. The metadata we used did not include sequencing depth or
+standard quality metrics such as the fraction of reads in peaks or TSS
+enrichment, so we relied on peak count as a quality proxy, with the
+5,000-peak threshold selected pragmatically. We also limited the text to
+metadata fields available in ChIP-Atlas and did not evaluate multimodal
+embeddings that combine text and chromatin signals. Future work could re-embed
+experiments using all of their peaks, use uniformly reprocessed and
+quality-controlled data, and investigate whether text encoders trained to
+predict chromatin similarity can narrow the gap.
+
+% ── Back matter ───────────────────────────────────────────────────────────────
+\section*{Data and code availability}
+
+ATAC-seq peak calls and metadata are publicly available from
+ChIP-Atlas~\cite{chipatlas}. All models are public Hugging Face checkpoints,
+listed by identifier in Sections~\ref{sec:atacformer}
+and~\ref{sec:text_emb}. Analysis code and derived results are available at
+\url{https://github.com/jjsong23/Biological-Embedding-Project}.
+
+\section*{Competing interests}
+
+The authors declare no competing interests.
+
+\section*{Acknowledgements}
+
+This work was supported by NVIDIA Corporation through its academic grant
+program via the provision of an NVIDIA DGX Spark system. Claude
+(Anthropic)~\cite{claude} was used to help write analysis code and edit the
+manuscript. The authors reviewed all code, results, and text and take full
+responsibility for the content.
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+% ── Supplementary material ────────────────────────────────────────────────────
+\clearpage
+\section*{Supplementary Figures and Tables}
+\setcounter{figure}{0}
+\setcounter{table}{0}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\theHfigure}{S\arabic{figure}}
+\renewcommand{\theHtable}{S\arabic{table}}
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[width=0.62\textwidth]{figS2n.png}
-  \caption{Spearman correlation between each embedding and RP on the full
-  dataset, at the cell-type level (solid bars) and the experiment level
-  (hatched bars); name-only variants are omitted. Error bars show 95\%
-  bootstrap CIs, and significance markers (Mantel test) apply to the
-  cell-type bars only. Well-covered results are given in
-  Table~\ref{tab:spearman}.}
-  \label{fig:s2}
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figS2n.png}
+    \caption{Spearman correlation between each embedding and RP on the full
+    dataset, at the cell-type level (solid bars) and the experiment level
+    (hatched bars); name-only variants are omitted. Error bars show 95\%
+    bootstrap CIs, and significance markers (Mantel test) apply to the
+    cell-type bars only. Well-covered results are given in
+    Table~\ref{tab:spearman}.}
+    \label{fig:s2}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{fig4b.png}
+    \caption{Fraction of each LM's top-$k$ nearest neighbors that are also
+    TF-IDF neighbors on the full dataset (about 33\% at $k=5$; 44 to 45\% in
+    well-covered experiments). The $y$-axis starts at 20\%.}
+    \label{fig:decomp_b}
+  \end{minipage}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figS3a.png}
+    \caption{TF-IDF similarity ($x$-axis) against LM similarity ($y$-axis,
+    labeled LLM) for 25,000 random experiment pairs from the full dataset,
+    colored by Atacformer similarity (warmer colors indicate higher
+    similarity). Points above the diagonal are pairs that the LM scores higher
+    than TF-IDF. Panel titles give the Spearman correlation between the two
+    similarities.}
+    \label{fig:s3a}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{figS3b.png}
+    \caption{Atacformer similarity for pairs below and above the diagonal in
+    Fig.~\ref{fig:s3a} (full dataset; Welch's $t$-test). For all four LMs,
+    pairs above the diagonal have higher mean Atacformer similarity
+    (PubMedBERT: 0.070 vs.\ 0.013; SapBERT: 0.059 vs.\ 0.027; MedCPT: 0.060
+    vs.\ 0.028; General: 0.051 vs.\ 0.037). The corresponding effect sizes
+    (Cohen's $d$) are 0.38, 0.22, 0.21, and 0.09.}
+    \label{fig:s3b}
+  \end{minipage}
 \end{figure}
 
 \begin{figure}[!htbp]
@@ -641,28 +796,27 @@ peaks. The remaining Atacformer pairs vary more in peak count.
   \begin{minipage}[t]{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{figS4a.png}
-    \caption{Within-cell-type similarity (mean pairwise cosine similarity among
-  experiments with the same cell-type label) for Atacformer against RP on the
-  full dataset (947 cell types with at least two experiments). Points below
-  the diagonal are cell types with lower within-cell-type similarity under
-  Atacformer than under RP.}
+    \caption{Within-cell-type similarity (mean pairwise cosine similarity
+    among experiments with the same cell-type label) for Atacformer against
+    RP on the full dataset (947 cell types with at least two experiments).
+    Points below the diagonal are cell types with lower within-cell-type
+    similarity under Atacformer than under RP.}
     \label{fig:s4}
   \end{minipage}\hfill
   \begin{minipage}[t]{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{figS4b.png}
     \caption{Distribution of within-cell-type similarity across cell types on
-  the full dataset (RP median 0.50, Atacformer median 0.16; Wilcoxon
-  signed-rank test). Within-cell-type similarity tracks the spread of peak
-  counts within each cell type (Section~\ref{sec:coverage}).}
+    the full dataset (RP median 0.50, Atacformer median 0.16; Wilcoxon
+    signed-rank test). Within-cell-type similarity tracks the spread of peak
+    counts within each cell type (Section~\ref{sec:coverage}).}
     \label{fig:s4b}
   \end{minipage}
 \end{figure}
 
-
 \begin{table}[!htbp]
   \centering\footnotesize
-  \setlength{\tabcolsep}{4pt}
+  \setlength{\tabcolsep}{3pt}
   \begin{minipage}[t]{0.485\textwidth}
     \centering
     \caption{Full-dataset experiment pairs with high Atacformer similarity (top
@@ -715,79 +869,5 @@ peaks. The remaining Atacformer pairs vary more in peak count.
     \end{tabular}
   \end{minipage}
 \end{table}
-
-
-% ── Discussion ────────────────────────────────────────────────────────────────
-\section{Discussion}
-
-Our results put quantitative bounds on how well experimental metadata can
-stand in for ATAC-seq chromatin similarity, and they show that these bounds
-depend on data quality. On the full ChIP-Atlas set, text embeddings correlated
-with Atacformer similarity at $\rho = 0.20$ to $0.30$. Most of this agreement
-came from low-peak experiments, whose promoter-dominated peak sets make them
-look alike in both chromatin representations, and from sample titles, which
-reflect data provenance and are tied to peak count. Among well-covered
-experiments, text embeddings barely tracked Atacformer similarity.
-
-The agreement that remained was between text and RP ($\rho = 0.06$ to $0.10$
-at the experiment level, with 28 to 35\% of top-5 neighbors shared). RP
-neighborhoods are organized largely by cell type, and text metadata recovers
-this coarse structure. Metadata may therefore be useful for coarse,
-cell-type-level retrieval, but it should not substitute for chromatin
-similarity in finer-grained applications.
-
-Language models added little. In well-covered experiments TF-IDF matched
-every LM, and partial correlations beyond TF-IDF were near zero for Atacformer
-and small for RP. The apparent advantage of PubMedBERT and SapBERT over MedCPT
-and General on the full dataset did not survive restriction to well-covered
-experiments, and it changed with corpus centering.
-
-The peak-count effect matters beyond text. In both chromatin
-representations, similarity was more strongly associated with peak count than
-with any other variable we examined, and controlling for peak count removed
-the experiment-level agreement between Atacformer and RP on the full dataset.
-Studies that compare chromatin embeddings across heterogeneous public
-repositories should stratify by peak count or control for it, along with
-other quality measures.
-
-This study has several limitations. Atacformer and RP serve as proxies for
-chromatin biology without validation against an external ground truth. Both
-are derived from the same ChIP-Atlas peak calls, both are sensitive to peak
-count, and the Atacformer embeddings used here carry little cell-type
-information for individual well-covered experiments. Our conclusions are
-therefore bounded by how faithfully these representations capture the
-biology they stand for. The metadata we used did not include sequencing depth
-or standard quality metrics such as the fraction of reads in peaks or TSS
-enrichment, so we relied on peak count as a quality proxy, and the 5,000-peak
-threshold is a pragmatic choice. We also limited the text to metadata fields
-available in ChIP-Atlas and did not test multimodal embeddings that combine
-text and chromatin signals. Future work could re-embed experiments using all
-of their peaks, use uniformly reprocessed and quality-controlled data, and
-test whether text encoders trained to predict chromatin similarity can narrow
-the gap.
-
-% ── Back matter ───────────────────────────────────────────────────────────────
-\section*{Data and code availability}
-
-ATAC-seq peak calls and metadata are publicly available from
-ChIP-Atlas~\cite{chipatlas}. All models are public Hugging Face checkpoints,
-listed by identifier in Sections~\ref{sec:atacformer}
-and~\ref{sec:text_emb}. Analysis code and derived results are available at
-\url{https://github.com/jjsong23/Biological-Embedding-Project}.
-
-\section*{Competing interests}
-
-The authors declare no competing interests.
-
-\section*{Acknowledgements}
-
-This work was supported by NVIDIA Corporation through its academic grant
-program via the provision of an NVIDIA DGX Spark system. Claude
-(Anthropic)~\cite{claude} was used to help write analysis code and edit the
-manuscript. The authors reviewed all code, results, and text and take full
-responsibility for the content.
-
-\bibliographystyle{unsrtnat}
-\bibliography{references}
 
 \end{document}

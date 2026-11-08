@@ -25,6 +25,24 @@ Zhaonan Zou, Tazro Ohta, Fumihito Miura, and Shinya Oki.
 \newblock \emph{Nature}, 518:\penalty0 317--330, 2015.
 \newblock \doi{10.1038/nature14248}.
 
+\bibitem[LeRoy et~al.(2025)LeRoy, Zheng, Khoroshevskyi, Campbell, Zhang, and
+  Sheffield]{atacformer}
+Nathan~J. LeRoy, Guangtao Zheng, Oleksandr Khoroshevskyi, Donald~R. Campbell,
+  Aidong Zhang, and Nathan~C. Sheffield.
+\newblock {Atacformer: A transformer-based foundation model for analysis and
+  interpretation of ATAC-seq data}.
+\newblock \emph{bioRxiv}, 2025.
+\newblock \doi{10.1101/2025.11.03.685753}.
+
+\bibitem[Qin et~al.(2020)Qin, Fan, Zheng, Wan, Mei, Wu, Sun, Brown, Zhang,
+  Meyer, and Liu]{lisa2}
+Qian Qin, Jingyu Fan, Rongbin Zheng, Changxin Wan, Shenglin Mei, Qiu Wu, Hanfei
+  Sun, Myles Brown, Jing Zhang, Clifford~A. Meyer, and X.~Shirley Liu.
+\newblock {Lisa: inferring transcriptional regulators through integrative
+  modeling of public chromatin accessibility and ChIP-seq data}.
+\newblock \emph{Genome Biology}, 21:\penalty0 32, 2020.
+\newblock \doi{10.1186/s13059-020-1934-6}.
+
 \bibitem[Gu et~al.(2021)Gu, Tinn, Cheng, Lucas, Usuyama, Liu, Naumann, Gao, and
   Poon]{pubmedbert}
 Yu~Gu, Robert Tinn, Hao Cheng, Michael Lucas, Naoto Usuyama, Xiaodong Liu,
@@ -48,24 +66,6 @@ Qiao Jin, Won Kim, Qingyu Chen, Donald~C. Comeau, Lana Yeganova, W.~John
   search logs for zero-shot biomedical information retrieval}.
 \newblock \emph{Bioinformatics}, 39\penalty0 (11):\penalty0 btad651, 2023.
 \newblock \doi{10.1093/bioinformatics/btad651}.
-
-\bibitem[LeRoy et~al.(2025)LeRoy, Zheng, Khoroshevskyi, Campbell, Zhang, and
-  Sheffield]{atacformer}
-Nathan~J. LeRoy, Guangtao Zheng, Oleksandr Khoroshevskyi, Donald~R. Campbell,
-  Aidong Zhang, and Nathan~C. Sheffield.
-\newblock {Atacformer: A transformer-based foundation model for analysis and
-  interpretation of ATAC-seq data}.
-\newblock \emph{bioRxiv}, 2025.
-\newblock \doi{10.1101/2025.11.03.685753}.
-
-\bibitem[Qin et~al.(2020)Qin, Fan, Zheng, Wan, Mei, Wu, Sun, Brown, Zhang,
-  Meyer, and Liu]{lisa2}
-Qian Qin, Jingyu Fan, Rongbin Zheng, Changxin Wan, Shenglin Mei, Qiu Wu, Hanfei
-  Sun, Myles Brown, Jing Zhang, Clifford~A. Meyer, and X.~Shirley Liu.
-\newblock {Lisa: inferring transcriptional regulators through integrative
-  modeling of public chromatin accessibility and ChIP-seq data}.
-\newblock \emph{Genome Biology}, 21:\penalty0 32, 2020.
-\newblock \doi{10.1186/s13059-020-1934-6}.
 
 \bibitem[Song et~al.(2020)Song, Tan, Qin, Lu, and Liu]{mpnet}
 Kaitao Song, Xu~Tan, Tao Qin, Jianfeng Lu, and Tie-Yan Liu.

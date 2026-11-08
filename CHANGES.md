@@ -281,3 +281,45 @@ the CSVs in code.
   - Typewriter text uses Latin Modern, so the PDF contains no bitmap fonts.
 - **References:** numbered, in citation order (natbib `unsrtnat`), with full author names.
 - **Prior layout:** the IEEE version is preserved in git at commit b20a067.
+
+---
+
+# Author revisions and mentor comments (2026-11-08)
+
+Source: Song_et_al_preprint_2026-10-25_yd.docx (Joshua's tracked edits, Yang Dai's 13 comment threads).
+
+## Author revisions carried into LaTeX
+All accepted edits from the Word file, with these corrections:
+- Removed stray tracked-change characters ("top-.k", "Spearman.", "experiments. (Fig. 3)").
+- Section 2.6: the depth-match / mean-depth sentence was garbled in Word; restored the original
+  definition. Kept the new cross-reference to Section 2.7.
+- "sample descriptions" changed to "cell-type descriptions" (Intro, Section 3.2); the field is
+  the ChIP-Atlas cell-type description.
+- Section 3.1: "more than 5,000 peaks" changed to "at least 5,000"; "the analyses" at 10,000 peaks
+  narrowed to "experiment-level analyses" (only those were rerun); "text-derived and
+  Atacformer-derived ... differs between Atacformer and RP" changed to "chromatin-derived".
+- Section 3.4: well-covered top-k values no longer cite Figs. 8-9 (those show the full dataset);
+  full-dataset values cite the two top-k figures instead of Fig. 10.
+- Grammar: "17, 232", "few than", "appeared outperform", "restriction to the analysis", and a
+  verbless sentence in the Discussion.
+
+## Mentor comments
+- C0: 12 pt Times (PDF and Word). Affiliations: Dept. of Biomedical Engineering for Lukas and Dai;
+  Joshua's department is a TODO.
+- C5: abstract now names which agreement is meant (text-Atacformer, text-RP).
+- C11: added citations for Atacformer [7] and RP [8] in the Introduction.
+- C28: stated that 1,108 is the number of ChIP-Atlas cell-type annotations.
+- C30: defined top-k overlap step by step (per experiment, text matrix vs. chromatin matrix).
+- C32: Section 2.6 now separates the four sensitivity analyses from the bootstrap uncertainty.
+- C73: simplified to "stronger than any correlation observed for a text embedding".
+- C78/C79: removed in-figure titles from Figs. 4 and 5 (regenerated from make_paper_figures.py).
+- C80: Fig. 5 (now S2) y-axis starts at 20%.
+- C81/C82/C85: moved the briefly discussed full-dataset figures and tables to a Supplementary
+  section: old Figs. 5, 6, 7, 10, 11, 12 are now Figs. S2, S3, S4, S1, S5, S6; old Tables 2-3 are
+  Tables S1-S2. Main text now has Figs. 1-6 and Table 1.
+- C84: rewrote the within-cell-type similarity sentence as a plain explanation.
+
+## Tools
+- tools/make_reference_docx.py: Word styles set to Times New Roman 12 pt, black headings.
+- tools/tex_to_docx_prep.py: reads authors/affiliations from the .tex; keeps the supplement.
+- analysis/make_paper_figures.py added (Fig. 4/S2 changes).
